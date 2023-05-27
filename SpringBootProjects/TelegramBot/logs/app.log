@@ -1,0 +1,4 @@
+2023-05-27 22:29:50,705 INFO c.e.t.TelegramBotApplication [main] Starting TelegramBotApplication using Java 18.0.2.1 with PID 4312 (D:\01_Саша\Проекты на Spring Boot\SpringBootProjects\TelegramBot\target\classes started by Home in D:\01_Саша\Проекты на Spring Boot\SpringBootProjects\TelegramBot)
+2023-05-27 22:29:50,712 INFO c.e.t.TelegramBotApplication [main] No active profile set, falling back to 1 default profile: "default"
+2023-05-27 22:29:53,565 INFO c.e.t.c.TelegramBotInit [main] Телеграм бот зарегистрирован
+2023-05-27 22:29:53,853 INFO c.e.t.TelegramBotApplication [main] Started TelegramBotApplication in 3.375 seconds (process running for 3.928)
