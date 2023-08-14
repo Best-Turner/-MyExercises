@@ -8,9 +8,9 @@ Add new user
 <div th:if="${message}">
     <i th:text="${message}"></i>
 </div>
-<form th:action="@{/registration}" method="post">
-    <div><label> User Name : <input type="text" name="username"/> </label></div>
-    <div><label> Password: <input type="password" name="password"/> </label></div>
+<form th:action="@{/registration}" th:method="post" th:object="${user}">
+    <div><label> User Name : <input type="text" th:field="*{username}" name="username"/> </label></div>
+    <div><label> Password: <input type="password" th:field="*{password}" name="password"/> </label></div>
     <div><input type="submit" value="Sign In"/></div>
 </form>
 </body>

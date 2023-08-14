@@ -12,17 +12,18 @@
     </form>
 </div>
 <div>
-    <form th:method="post" th:action="@{/filter}">
-        <input type="text" name="filter">
+    <form th:method="get" th:action="@{/main}">
+        <input type="text" name="filter" th:value="${filter}">
         <button type="submit">Найти!</button>
     </form>
 </div>
+
 <i>Список сообщений</i>
 <div th:each="(message:${messages})">
     <span th:text="${message.getId()}"></span>
     <span th:text="${message.getText()}"></span>
     <span th:text="${message.getTag()}"></span>
-
+    <i th:text="${message.getAuthorName()}"></i>
 </div>
 </body>
 </html>
