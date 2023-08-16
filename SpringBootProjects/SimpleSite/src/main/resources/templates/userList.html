@@ -22,7 +22,7 @@
 <!--    </tr>-->
 <tr>
     <td th:text="${user.getUsername()}"></td>
-    <td th:text="${#strings.setJoin(user.getRoles(), ',')}"></td>
+    <td th:text="${#strings.setJoin(user.getRoles(), ', ')}"></td>
     <td><a th:href="@{/user/{id}(id=${user.getId()})}">
         <button style="color:orange" type="submit">Изменить</button>
     </a></td>

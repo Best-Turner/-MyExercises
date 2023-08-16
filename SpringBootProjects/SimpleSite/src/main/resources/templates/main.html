@@ -1,8 +1,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml">
 <body>
+<div>
 <form th:action="@{/logout}" th:method="post">
     <input type="submit" value="Sign Out"/>
 </form>
+    <span> <a href="/user">User List</a></span>
+</div>
 
 <div>
     <form th:action="@{/main}" th:method="post">
