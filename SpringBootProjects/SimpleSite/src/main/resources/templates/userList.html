@@ -2,6 +2,7 @@
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="/static/style.css">
     <title>List of users</title>
 </head>
 <body>
@@ -14,12 +15,6 @@
     </tr>
     </thead>
     <tbody th:each="(user:${users})">
-<!--    <tr>-->
-<!--        <td th:text="${user.getUsername()}"></td>-->
-<!--        <div th:each="(role:${user.getRoles()})">-->
-<!--            <td th:text="${role}"></td>-->
-<!--        </div>-->
-<!--    </tr>-->
 <tr>
     <td th:text="${user.getUsername()}"></td>
     <td th:text="${#strings.setJoin(user.getRoles(), ', ')}"></td>

@@ -19,6 +19,8 @@ public class Message {
     @JoinColumn(name = "user_id")
     private User author;
 
+    private String fileName;
+
     public Integer getId() {
         return id;
     }
@@ -30,6 +32,14 @@ public class Message {
         this.text = text;
         this.tag = tag;
         this.author = user;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
     public void setId(Integer id) {

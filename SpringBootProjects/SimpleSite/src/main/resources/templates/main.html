@@ -1,4 +1,9 @@
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Main</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
 <body>
 <div>
 <form th:action="@{/logout}" th:method="post">
@@ -8,9 +13,10 @@
 </div>
 
 <div>
-    <form th:action="@{/main}" th:method="post">
+    <form th:action="@{/main}" th:method="post" enctype="multipart/form-data">
         <input type="text" name="text" placeholder="Введите текст сообщения">
         <input type="text" name="tag" placeholder="Введите тег">
+        <input type="file" name="file">
         <button type="submit">Добавить</button>
     </form>
 </div>
@@ -27,6 +33,9 @@
     <span th:text="${message.getText()}"></span>
     <span th:text="${message.getTag()}"></span>
     <i th:text="${message.getAuthorName()}"></i>
+    <div th:if="${message.getFileName()!=null}">
+        <img width="100" height="100" th:src="@{'/img/' + ${message.getFileName()}}"/>
+    </div>
 </div>
 </body>
 </html>

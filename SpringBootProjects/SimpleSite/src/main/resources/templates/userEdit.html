@@ -3,15 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>User Editor</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
 <form th:method="POST" th:action="@{/user/{id}(id=${user.getId()})}" th:object="${user}">
   <input th:value="${user.getUsername()}" name="username">
-<!--  <span th:each="(role:${user.getRoles()})">-->
-<!--    <div>-->
-<!--      <input type="checkbox" name="role" th:checked="${role}" th:text="${role}">-->
-<!--    </div>-->
-<!--  </span>-->
+
   <div th:each="role : ${roles}">
     <label th:for="${role}" th:text="${role}"></label>
     <input type="checkbox" th:checked="${#lists.contains(user.roles, role)}" th:name="${role}">
