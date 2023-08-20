@@ -3,14 +3,22 @@
 <head>
     <title>Spring Security Example </title>
     <link rel="stylesheet" href="/static/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
 </head>
+
+
 <body>
+<div th:insert="~{header :: copy}"></div>
 Login page
 <form th:action="@{/login}" th:method="post">
-    <div><label> User Name : <input type="text" name="username"/> </label></div>
-    <div><label> Password: <input type="password" name="password"/> </label></div>
-    <div><input type="submit" value="Sign In"/></div>
+    <div th:insert="~{security :: fragmentRegistration}"></div>
+    <button type="submit" class="btn btn-primary">Submit</button>
 </form>
-<a href="/registration">Add new user</a>
+<a href="/registration">
+    <button type="submit" class="btn btn-primary">Registration</button>
+</a>
+
+
 </body>
 </html>

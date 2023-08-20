@@ -1,40 +1,40 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml">
+<html xmlns:th="http://www.thymeleaf.org" lang="ru"
+>
 <head>
     <title>Main</title>
     <link rel="stylesheet" href="/static/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
 </head>
 <body>
-<div>
-<form th:action="@{/logout}" th:method="post">
-    <input type="submit" value="Sign Out"/>
-</form>
-    <span> <a href="/user">User List</a></span>
-</div>
+<div th:insert="~{header :: copy}"></div>
+<div class="container mt-3">
 
-<div>
-    <form th:action="@{/main}" th:method="post" enctype="multipart/form-data">
-        <input type="text" name="text" placeholder="Введите текст сообщения">
-        <input type="text" name="tag" placeholder="Введите тег">
-        <input type="file" name="file">
-        <button type="submit">Добавить</button>
-    </form>
-</div>
-<div>
-    <form th:method="get" th:action="@{/main}">
-        <input type="text" name="filter" th:value="${filter}">
-        <button type="submit">Найти!</button>
-    </form>
-</div>
+    <div>
+        <form th:action="@{/main}" th:method="post" enctype="multipart/form-data">
+            <input type="text" name="text" placeholder="Введите текст сообщения">
+            <input type="text" name="tag" placeholder="Введите тег">
+            <input type="file" name="file">
+            <button type="submit">Добавить</button>
+        </form>
+    </div>
+    <div>
+        <form th:method="get" th:action="@{/main}">
+            <input type="text" name="filter" th:value="${filter}">
+            <button type="submit">Найти!</button>
+        </form>
+    </div>
 
-<i>Список сообщений</i>
-<div th:each="(message:${messages})">
-    <span th:text="${message.getId()}"></span>
-    <span th:text="${message.getText()}"></span>
-    <span th:text="${message.getTag()}"></span>
-    <i th:text="${message.getAuthorName()}"></i>
-    <div th:if="${message.getFileName()!=null}">
-        <img width="100" height="100" th:src="@{'/img/' + ${message.getFileName()}}"/>
+    <i>Список сообщений</i>
+    <div th:each="(message:${messages})">
+        <span th:text="${message.getId()}"></span>
+        <span th:text="${message.getText()}"></span>
+        <span th:text="${message.getTag()}"></span>
+        <i th:text="${message.getAuthorName()}"></i>
+        <div th:if="${message.getFileName()!=null}">
+            <img width="100" height="100" th:src="@{'/img/' + ${message.getFileName()}}"/>
+        </div>
     </div>
 </div>
 </body>

@@ -2,7 +2,6 @@ package com.example.simpleSite.util;
 
 import com.example.simpleSite.models.User;
 import org.springframework.security.core.GrantedAuthority;
-
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;

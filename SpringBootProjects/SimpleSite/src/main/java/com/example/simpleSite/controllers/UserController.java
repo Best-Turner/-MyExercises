@@ -10,7 +10,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -47,7 +46,7 @@ public class UserController {
                 .map(value -> value.name())
                 .collect(Collectors.toSet());
         user.getRoles().clear();
-        for(String key : role.keySet()) {
+        for (String key : role.keySet()) {
             if (roles.contains(key)) {
                 user.getRoles().add(Role.valueOf(key));
             }

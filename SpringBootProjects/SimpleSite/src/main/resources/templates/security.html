@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml"
+>
+<head>
+    <meta charset="UTF-8">
+    <title>SecurityForm</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+</head>
+<body>
+<div th:fragment="fragmentRegistration">
+    <div class="col-sm-6">
+        <label for="exampleInputName" class="form-label"> User Name :</label>
+        <input type="text" class="form-control" id="exampleInputName" name="username"
+               placeholder="Enter your username"/>
+    </div>
+    <div class="col-sm-6">
+        <label for="exampleInputPassword" class="form-label"> Password:</label>
+        <input type="password" class="form-control" name="password" id="exampleInputPassword"
+               placeholder="Enter password"/>
+    </div>
+
+</div>
+</body>
+</html>

@@ -3,17 +3,20 @@
 <head>
     <title>Registration</title>
     <link rel="stylesheet" href="/static/style.css">
-
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
 </head>
 <body>
-Add new user
-<div th:if="${message}">
-    <i th:text="${message}"></i>
+<div th:insert="~{header :: copy}"></div>
+<div class="class=container mt-3">
+    Add new user
+    <div th:if="${message}">
+        <i th:text="${message}"></i>
+    </div>
+    <form th:action="@{/registration}" th:method="post" th:object="${user}">
+        <div th:insert="~{security :: fragmentRegistration}"></div>
+        <button type="submit" class="btn btn-primary">Sign in</button>
+    </form>
 </div>
-<form th:action="@{/registration}" th:method="post" th:object="${user}">
-    <div><label> User Name : <input type="text" th:field="*{username}" name="username"/> </label></div>
-    <div><label> Password: <input type="password" th:field="*{password}" name="password"/> </label></div>
-    <div><input type="submit" value="Sign In"/></div>
-</form>
 </body>
 </html>

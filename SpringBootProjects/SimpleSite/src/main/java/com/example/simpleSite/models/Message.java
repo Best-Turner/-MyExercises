@@ -69,7 +69,8 @@ public class Message {
     public void setAuthor(User author) {
         this.author = author;
     }
+
     public String getAuthorName() {
-        return author!= null? author.getUsername() : "<none>";
+        return author != null ? author.getUsername() : "<none>";
     }
 }
