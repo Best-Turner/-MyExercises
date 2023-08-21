@@ -9,31 +9,53 @@
 </head>
 <body>
 <div th:insert="~{header :: copy}"></div>
-<div class="container mt-3">
 
-    <div>
-        <form th:action="@{/main}" th:method="post" enctype="multipart/form-data">
-            <input type="text" name="text" placeholder="Введите текст сообщения">
-            <input type="text" name="tag" placeholder="Введите тег">
-            <input type="file" name="file">
-            <button type="submit">Добавить</button>
-        </form>
+<form class="row row-cols-lg-auto g-3 align-items-center" th:method="get" th:action="@{/main}">
+    <div class="col-12">
+        <input type="text" class="form-control" id="inputFilter" name="filter" th:value="${filter}"
+               placeholder="Search by tag">
     </div>
-    <div>
-        <form th:method="get" th:action="@{/main}">
-            <input type="text" name="filter" th:value="${filter}">
-            <button type="submit">Найти!</button>
-        </form>
+    <div class="col-12">
+        <button type="submit" class="btn btn-primary">Search</button>
     </div>
+</form>
 
-    <i>Список сообщений</i>
+<a class="btn btn-primary my-3" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false"
+   aria-controls="collapseExample">
+    Add new message
+</a>
+
+<div class="collapse" id="collapseExample">
+
+    <form th:action="@{/main}" th:method="post" enctype="multipart/form-data">
+        <div class="mb-3 col-sm-6">
+            <input type="text" name="text" placeholder="Текст сообщения" class="form-control">
+        </div>
+        <div class="mb-3 col-sm-3">
+            <input type="text" name="tag" placeholder="Тэг" class="form-control">
+        </div>
+        <div class="input-group col-sm-3    ">
+            <input type="file" name="file" class="form-control" id="inputGroupFile04"
+                   aria-describedby="inputGroupFileAddon04" aria-label="Upload">
+        </div>
+        <button class="btn btn-outline-secondary" type="submit" id="inputGroupFileAddon04">Download</button>
+    </form>
+</div>
+
+
+<p>Список сообщений</p>
+<div class="row row-cols-1 row-cols-md-3 g-1">
     <div th:each="(message:${messages})">
-        <span th:text="${message.getId()}"></span>
-        <span th:text="${message.getText()}"></span>
-        <span th:text="${message.getTag()}"></span>
-        <i th:text="${message.getAuthorName()}"></i>
-        <div th:if="${message.getFileName()!=null}">
-            <img width="100" height="100" th:src="@{'/img/' + ${message.getFileName()}}"/>
+
+        <div class="card my-3 w-100">
+            <div th:if="${message.getFileName()!=null}">
+                <img class="card-img-top" th:src="@{'/img/' + ${message.getFileName()}}"/>
+            </div>
+            <div class="m-2">
+                <span th:text="${message.getText()}"></span>
+                <i th:text="${message.getTag()}"></i>
+            </div>
+            <div class="card-footer text-body-secondary" th:text="${message.getAuthorName()}">Username</div>
         </div>
     </div>
 </div>

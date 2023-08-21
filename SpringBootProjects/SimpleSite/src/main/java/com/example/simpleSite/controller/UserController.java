@@ -1,4 +1,4 @@
-package com.example.simpleSite.controllers;
+package com.example.simpleSite.controller;
 
 import com.example.simpleSite.models.Role;
 import com.example.simpleSite.models.User;
