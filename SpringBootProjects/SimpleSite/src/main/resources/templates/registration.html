@@ -15,6 +15,11 @@
     </div>
     <form th:action="@{/registration}" th:method="post" th:object="${user}">
         <div th:insert="~{security :: fragmentRegistration}"></div>
+        <div class="col-sm-6">
+            <label for="exampleInputEmail" class="form-label"> Email :</label>
+            <input type="email" class="form-control" id="exampleInputEmail" name="email"
+                   placeholder="some@some.com"/>
+        </div>
         <button type="submit" class="btn btn-primary">Sign in</button>
     </form>
 </div>

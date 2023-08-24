@@ -1,6 +1,8 @@
 package com.example.simpleSite.config;
 
-import com.example.simpleSite.services.UserService;
+import com.example.simpleSite.service.UserService;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,7 +28,7 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/", "/registration", "/static/**").permitAll()
+                        .requestMatchers("/", "/registration", "/static/**","/activate/*").permitAll()
                         .anyRequest().authenticated())
                 .formLogin((form) -> form
                         .loginPage("/login")
@@ -36,10 +38,7 @@ public class WebSecurityConfig {
         return http.build();
     }
 
-    @Bean
-    public PasswordEncoder getPasswordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+
 
 
 }

@@ -1,29 +1,25 @@
 package com.example.simpleSite.controller;
 
-import com.example.simpleSite.models.Role;
 import com.example.simpleSite.models.User;
-import com.example.simpleSite.repositories.UserRepo;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.simpleSite.service.UserService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
 
 @Controller
 public class RegistrationController {
-    private final UserRepo userRepo;
-    private final PasswordEncoder passwordEncoder;
+    private final UserService userService;
+    //private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    public RegistrationController(UserRepo userRepo, PasswordEncoder passwordEncoder) {
-        this.userRepo = userRepo;
-        this.passwordEncoder = passwordEncoder;
+    public RegistrationController(UserService userService) {
+        this.userService = userService;
+        //this.passwordEncoder = passwordEncoder;
     }
+
 
     @GetMapping("/registration")
     public String registration(@ModelAttribute("user") User user) {
@@ -32,18 +28,23 @@ public class RegistrationController {
 
     @PostMapping("/registration")
     public String addUser(User user,
-                          Map<String, Object> model) {
-        Optional<User> fromDB = userRepo.findByUsername(user.getUsername());
-        if (fromDB.isEmpty()) {
-            user.setActive(true);
-            user.setRoles(Collections.singleton(Role.USER));
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-            userRepo.save(user);
-        } else {
-            model.put("message", "User exists!");
+                          Model model) {
+
+        if (!userService.addUser(user)) {
+            model.addAttribute("message", "User exists!");
             return "registration";
         }
-
         return "redirect:/login";
+    }
+
+    @GetMapping("/activate/{code}")
+    public String activate(Model model, @PathVariable String code) {
+        boolean isActivated = userService.activsteCode(code);
+        if (isActivated) {
+            model.addAttribute("message", "User successfully activated");
+        } else {
+            model.addAttribute("message", "Activation code is not found!");
+        }
+        return "login";
     }
 }

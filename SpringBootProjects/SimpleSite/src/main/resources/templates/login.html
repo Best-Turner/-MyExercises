@@ -13,6 +13,9 @@
 Login page
 <form th:action="@{/login}" th:method="post">
     <div th:insert="~{security :: fragmentRegistration}"></div>
+    <div th:if="${message}">
+        <i th:text="${message}">Message</i>
+    </div>
     <button type="submit" class="btn btn-primary">Submit</button>
 </form>
 <a href="/registration">
