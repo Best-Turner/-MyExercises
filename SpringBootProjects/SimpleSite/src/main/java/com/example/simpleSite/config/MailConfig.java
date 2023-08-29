@@ -38,9 +38,11 @@ public class MailConfig {
         mailSender.setPort(port);
 
 
-        Properties javaMailProperties = mailSender.getJavaMailProperties();
-        javaMailProperties.setProperty("mail.transport.protocol", protocol);
-        javaMailProperties.setProperty("mail.debug", debug);
+        Properties properties = mailSender.getJavaMailProperties();
+        properties.setProperty("mail.transport.protocol", protocol);
+        properties.setProperty("mail.debug", debug);
+
         return mailSender;
     }
+
 }

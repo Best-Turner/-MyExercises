@@ -2,35 +2,34 @@ package com.example.simpleSite.controller;
 
 import com.example.simpleSite.models.Role;
 import com.example.simpleSite.models.User;
-import com.example.simpleSite.repositories.UserRepo;
+import com.example.simpleSite.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/user")
-@PreAuthorize("hasAuthority('ADMIN')")
 public class UserController {
-    private final UserRepo userRepo;
+    private final UserService userService;
+
 
     @Autowired
-    public UserController(UserRepo userRepo) {
-        this.userRepo = userRepo;
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String userList(Model model) {
-        model.addAttribute("users", userRepo.findAll());
+        model.addAttribute("users", userService.findAll());
         return "userList";
     }
-
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("{user}")
     public String userEditForm(@PathVariable User user, Model model) {
         model.addAttribute("user", user);
@@ -38,20 +37,27 @@ public class UserController {
         return "userEdit";
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("{user}")
     public String userSave(@ModelAttribute User user,
                            @RequestParam Map<String, String> role) {
-
-        Set<String> roles = Arrays.stream(Role.values())
-                .map(value -> value.name())
-                .collect(Collectors.toSet());
-        user.getRoles().clear();
-        for (String key : role.keySet()) {
-            if (roles.contains(key)) {
-                user.getRoles().add(Role.valueOf(key));
-            }
-        }
-        userRepo.save(user);
+        userService.saveUser(user, role);
         return "redirect:/user";
+    }
+
+    @GetMapping("profile")
+    public String getProfile(@AuthenticationPrincipal User user, Model model) {
+        model.addAttribute("user", user);
+        return "profile";
+    }
+
+    @PostMapping("profile")
+    public String updateProfile(@AuthenticationPrincipal User user,
+                                @RequestParam String username,
+                                @RequestParam String password,
+                                @RequestParam String email) {
+        userService.updateProfile(user, username, password, email);
+
+        return "redirect:/user/profile";
     }
 }

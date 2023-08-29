@@ -8,7 +8,7 @@ public class Message {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     private String text;
 
@@ -21,7 +21,7 @@ public class Message {
 
     private String fileName;
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
@@ -42,7 +42,7 @@ public class Message {
         this.fileName = fileName;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

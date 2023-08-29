@@ -11,9 +11,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -46,7 +45,57 @@ public class UserService implements UserDetailsService {
         user.setActivationCode(UUID.randomUUID().toString());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepo.save(user);
+        sendMessage(user);
 
+        return true;
+    }
+
+    public boolean activateCode(String code) {
+        Optional<User> userFromDB = userRepo.findByActivationCode(code);
+        if (userFromDB.isPresent()) {
+            User user = userFromDB.get();
+            user.setActivationCode(null);
+            userRepo.save(user);
+            return true;
+        }
+        return false;
+    }
+
+    public void saveUser(User user, Map<String, String> role) {
+        Set<String> roles = Arrays.stream(Role.values())
+                .map(value -> value.name())
+                .collect(Collectors.toSet());
+        user.getRoles().clear();
+        for (String key : role.keySet()) {
+            if (roles.contains(key)) {
+                user.getRoles().add(Role.valueOf(key));
+            }
+        }
+        userRepo.save(user);
+    }
+
+    public List<User> findAll() {
+        return userRepo.findAll();
+    }
+
+    public void updateProfile(User user, String username, String password, String email) {
+
+        if (!StringUtils.isEmptyOrWhitespaceOnly(username) && !user.getUsername().equals(username)) {
+            user.setUsername(username);
+        }
+        boolean isEmailChange = !StringUtils.isEmptyOrWhitespaceOnly(email) && !user.getEmail().equals(email);
+        if (isEmailChange) {
+            user.setEmail(email);
+        }
+
+        user.setPassword(passwordEncoder.encode(password));
+        userRepo.save(user);
+        if (isEmailChange) {
+            sendMessage(user);
+        }
+    }
+
+    private void sendMessage(User user) {
         if (!StringUtils.isEmptyOrWhitespaceOnly(user.getEmail())) {
             String message = String.format(
                     "Hello, %s \n" +
@@ -56,18 +105,5 @@ public class UserService implements UserDetailsService {
             );
             mailSender.send(user.getEmail(), "Activation code", message);
         }
-
-        return true;
-    }
-
-    public boolean activsteCode(String code) {
-        Optional<User> userFromDB = userRepo.findByActivationCode(code);
-        if (userFromDB.isPresent()) {
-            User user = userFromDB.get();
-            user.setActivationCode(null);
-            userRepo.save(user);
-            return true;
-        }
-        return false;
     }
 }

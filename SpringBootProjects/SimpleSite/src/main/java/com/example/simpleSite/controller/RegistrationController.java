@@ -2,7 +2,6 @@ package com.example.simpleSite.controller;
 
 import com.example.simpleSite.models.User;
 import com.example.simpleSite.service.UserService;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,11 +12,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 @Controller
 public class RegistrationController {
     private final UserService userService;
-    //private final PasswordEncoder passwordEncoder;
 
     public RegistrationController(UserService userService) {
         this.userService = userService;
-        //this.passwordEncoder = passwordEncoder;
     }
 
 
@@ -39,7 +36,7 @@ public class RegistrationController {
 
     @GetMapping("/activate/{code}")
     public String activate(Model model, @PathVariable String code) {
-        boolean isActivated = userService.activsteCode(code);
+        boolean isActivated = userService.activateCode(code);
         if (isActivated) {
             model.addAttribute("message", "User successfully activated");
         } else {
