@@ -25,16 +25,24 @@
     Add new message
 </a>
 
-<div class="collapse" id="collapseExample">
+<div th:class="${!#strings.isEmpty(textError)}?'collapse show':'collapse'" id="collapseExample">
 
     <form th:action="@{/main}" th:method="post" enctype="multipart/form-data">
         <div class="mb-3 col-sm-6">
-            <input type="text" name="text" placeholder="Текст сообщения" class="form-control">
+            <input type="text" name="text" placeholder="Текст сообщения"
+                   th:value="${#strings.isEmpty(message)}?'':${message.getText()}"
+                   th:class="${#strings.isEmpty(textError)}?'form-control':'form-control is-invalid'">
+            <div class="invalid-feedback" th:text="${textError}">Error text</div>
         </div>
+
         <div class="mb-3 col-sm-3">
-            <input type="text" name="tag" placeholder="Тэг" class="form-control">
+            <input type="text" name="tag" placeholder="Тэг" class="form-control"
+                   th:value="${#strings.isEmpty(message)}?'':${message.getTag()}"
+                   th:class="${#strings.isEmpty(tagError)}?'form-control':'form-control is-invalid'">
+            <div class="invalid-feedback" th:text="${tagError}">Error text</div>
+
         </div>
-        <div class="input-group col-sm-3    ">
+        <div class="input-group col-sm-3">
             <input type="file" name="file" class="form-control" id="inputGroupFile04"
                    aria-describedby="inputGroupFileAddon04" aria-label="Upload">
         </div>

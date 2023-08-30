@@ -1,6 +1,8 @@
 package com.example.simpleSite.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import org.hibernate.validator.constraints.Length;
 
 @Entity
 @Table(name = "message")
@@ -9,9 +11,10 @@ public class Message {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    @NotBlank(message = "Please fill the message")
+    @Length(message = "Message too long (more than 2kB)", max = 2048)
     private String text;
-
+    @Length(message = "Tag too long (more that 255)", max = 255)
     private String tag;
 
 
