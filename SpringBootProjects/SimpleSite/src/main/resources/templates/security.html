@@ -11,14 +11,21 @@
 <div th:fragment="fragmentRegistration">
     <div class="col-sm-6">
         <label for="exampleInputName" class="form-label"> User Name :</label>
-        <input type="text" class="form-control" id="exampleInputName" name="username"
+        <input type="text" th:class="${#strings.isEmpty(usernameError)}?'form-control':'form-control is-invalid'"
+               id="exampleInputName" name="username"
+               th:value="${#strings.isEmpty(user)}?'':${user.getUsername()}"
                placeholder="Enter your username"/>
+        <div class="invalid-feedback" th:text="${usernameError}">Error username</div>
     </div>
     <div class="col-sm-6">
         <label for="exampleInputPassword" class="form-label"> Password:</label>
-        <input type="password" class="form-control" name="password" id="exampleInputPassword"
+        <input type="password" th:class="${#strings.isEmpty(passwordError)}?'form-control':'form-control is-invalid'"
+               name="password" id="exampleInputPassword"
                placeholder="Enter password"/>
+        <div class="invalid-feedback" th:text="${passwordError}">Error password</div>
+
     </div>
+
 
 </div>
 </body>

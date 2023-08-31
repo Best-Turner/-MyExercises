@@ -29,13 +29,12 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User userFromDB = userRepo.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Пользовательл не найден!"));
-        return userFromDB;
+        return userRepo.findByUsername(username).orElseThrow(() ->
+                new UsernameNotFoundException("User not found!"));
     }
 
     public boolean addUser(User user) {
         Optional<User> fromDB = userRepo.findByUsername(user.getUsername());
-
         if (fromDB.isPresent()) {
             return false;
         }
@@ -55,7 +54,7 @@ public class UserService implements UserDetailsService {
         if (userFromDB.isPresent()) {
             User user = userFromDB.get();
             user.setActivationCode(null);
-            userRepo.save(user);
+Z            userRepo.save(user);
             return true;
         }
         return false;

@@ -20,10 +20,10 @@ public class User implements UserDetails {
     @NotBlank(message = "Password cannot be empty")
     private String password;
     @Transient
-    //@NotBlank(message = "Password confirmation cannot be empty")
+    @NotBlank(message = "Password confirmation cannot be empty")
     private String password2;
     private boolean active;
-    @NotBlank(message = "Username cannot be empty")
+    @NotBlank(message = "Email cannot be empty")
     @Email(message = "Email is not correct")
     private String email;
     private String activationCode;

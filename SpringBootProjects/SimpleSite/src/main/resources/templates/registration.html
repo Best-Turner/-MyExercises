@@ -8,17 +8,30 @@
 </head>
 <body>
 <div th:insert="~{header :: copy}"></div>
-<div class="class=container mt-3">
+<div class="container mt-5">
     Add new user
-    <div th:if="${message}">
-        <i th:text="${message}"></i>
+    <div th:if="${userNameError}">
+        <i th:text="${userNameError}"></i>
     </div>
     <form th:action="@{/registration}" th:method="post" th:object="${user}">
         <div th:insert="~{security :: fragmentRegistration}"></div>
         <div class="col-sm-6">
+            <label for="exampleInputPassword" class="form-label"> Password:</label>
+            <input type="password"
+                   th:class="${#strings.isEmpty(password2Error)}?'form-control':'form-control is-invalid'"
+                   name="password2" id="exampleInputPassword"
+                   placeholder="Retype password"/>
+            <div class="invalid-feedback" th:text="${password2Error}">Error password2</div>
+
+        </div>
+        <div class="col-sm-6">
             <label for="exampleInputEmail" class="form-label"> Email :</label>
-            <input type="email" class="form-control" id="exampleInputEmail" name="email"
+            <input type="email" th:class="${#strings.isEmpty(emailError)}?'form-control':'form-control is-invalid'"
+                   id="exampleInputEmail" name="email"
+                   th:value="${#strings.isEmpty(user)}?'':${user.getEmail()}"
                    placeholder="some@some.com"/>
+            <div class="invalid-feedback" th:text="${emailError}">Error email</div>
+
         </div>
         <button type="submit" class="btn btn-primary">Sign in</button>
     </form>

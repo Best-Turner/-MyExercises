@@ -11,17 +11,24 @@
 <body>
 <div th:insert="~{header :: copy}"></div>
 Login page
-<form th:action="@{/login}" th:method="post">
-    <div th:insert="~{security :: fragmentRegistration}"></div>
-    <div th:if="${message}">
-        <i th:text="${message}">Message</i>
-    </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
-</form>
-<a href="/registration">
-    <button type="submit" class="btn btn-primary">Registration</button>
-</a>
+<div class="container mt-5">
 
+    <form th:action="@{/login}" th:method="post">
+        <div th:if="${param.error} and ${session}" th:with="errorMsg=${session['SPRING_SECURITY_LAST_EXCEPTION']}">
+            <div class="alert alert-danger" role="alert">
+                Reason: <span th:text="${errorMsg.getMessage()}">Demo Invalid input</span>
+            </div>
+        </div>
+        <div th:insert="~{security :: fragmentRegistration}"></div>
+        <div th:if="${userNameError}">
+            <i th:text="${userNameError}">Message</i>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    <a href="/registration">
+        <button type="submit" class="btn btn-primary">Registration</button>
+    </a>
+</div>
 
 </body>
 </html>

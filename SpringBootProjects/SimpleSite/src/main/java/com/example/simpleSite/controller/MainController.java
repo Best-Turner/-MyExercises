@@ -68,7 +68,6 @@ public class MainController {
                 if (!uploadDir.exists()) {
                     uploadDir.mkdir();
                 }
-
                 String uuidFile = UUID.randomUUID().toString();
                 String resultFilename = uuidFile + "." + file.getOriginalFilename();
                 message.setFileName(resultFilename);
@@ -77,7 +76,6 @@ public class MainController {
             }
             messageRepo.save(message);
         }
-
         return "redirect:main";
     }
 
