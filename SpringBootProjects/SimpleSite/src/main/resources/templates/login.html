@@ -23,6 +23,9 @@ Login page
         <div th:if="${userNameError}">
             <i th:text="${userNameError}">Message</i>
         </div>
+        <div th:if="${!#strings.isEmpty(message)}" th:class="'alert alert-' + ${messageType}" role="alert">
+            <i th:text="${message}"></i>
+        </div>
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
     <a href="/registration">

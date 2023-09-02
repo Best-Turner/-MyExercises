@@ -54,7 +54,7 @@ public class UserService implements UserDetailsService {
         if (userFromDB.isPresent()) {
             User user = userFromDB.get();
             user.setActivationCode(null);
-Z            userRepo.save(user);
+            userRepo.save(user);
             return true;
         }
         return false;

@@ -13,7 +13,6 @@ public class ControllerUtils {
         Collector<FieldError, ?, Map<String, String>> collector = Collectors.toMap(
                 filedError -> filedError.getField() + "Error",
                 FieldError::getDefaultMessage);
-
         return bindingResult.getFieldErrors().stream().collect(collector);
     }
 }

@@ -5,6 +5,8 @@
     <link rel="stylesheet" href="/static/style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <script src='https://www.google.com/recaptcha/api.js'></script>
+
 </head>
 <body>
 <div th:insert="~{header :: copy}"></div>
@@ -16,10 +18,10 @@
     <form th:action="@{/registration}" th:method="post" th:object="${user}">
         <div th:insert="~{security :: fragmentRegistration}"></div>
         <div class="col-sm-6">
-            <label for="exampleInputPassword" class="form-label"> Password:</label>
+            <label for="exampleInputPassword" class="form-label"> Password2:</label>
             <input type="password"
                    th:class="${#strings.isEmpty(password2Error)}?'form-control':'form-control is-invalid'"
-                   name="password2" id="exampleInputPassword"
+                   name="passwordConfirm" id="exampleInputPassword"
                    placeholder="Retype password"/>
             <div class="invalid-feedback" th:text="${password2Error}">Error password2</div>
 
@@ -32,6 +34,13 @@
                    placeholder="some@some.com"/>
             <div class="invalid-feedback" th:text="${emailError}">Error email</div>
 
+        </div>
+        <div class="col-sm-6">
+            <div class="g-recaptcha" data-sitekey="6LfiRvMnAAAAABwwD77QXhH1d9ZaDlK4O18VKFK_">
+                <div th:if="${!#strings.isEmpty(captchaError)}" class="alert alert-danger" role="alert">
+                    <i th:text="${captchaError}"></i>
+                </div>
+            </div>
         </div>
         <button type="submit" class="btn btn-primary">Sign in</button>
     </form>
