@@ -87,7 +87,10 @@ public class UserService implements UserDetailsService {
             user.setEmail(email);
         }
 
-        user.setPassword(passwordEncoder.encode(password));
+        boolean isChanged = user.getPassword().equals(password);
+        if (!isChanged) {
+            user.setPassword(passwordEncoder.encode(password));
+        }
         userRepo.save(user);
         if (isEmailChange) {
             sendMessage(user);

@@ -9,68 +9,73 @@
 </head>
 <body>
 <div th:insert="~{header :: copy}"></div>
-
-<form class="row row-cols-lg-auto g-3 align-items-center" th:method="get" th:action="@{/main}">
-    <div class="col-12">
-        <input type="text" class="form-control" id="inputFilter" name="filter" th:value="${filter}"
-               placeholder="Search by tag">
-    </div>
-    <div class="col-12">
-        <button type="submit" class="btn btn-primary">Search</button>
-    </div>
-</form>
-
-<a class="btn btn-primary my-3" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false"
-   aria-controls="collapseExample">
-    Add new message
-</a>
-
-<div th:class="${!#strings.isEmpty(textError)}?'collapse show':'collapse'" id="collapseExample"
->
-
-    <form th:action="@{/main}" th:method="post" enctype="multipart/form-data">
-        <div class="mb-3 col-sm-6">
-            <input type="text" name="text" placeholder="Текст сообщения"
-                   th:value="${#strings.isEmpty(message)}?'':${message.getText()}"
-                   th:class="${#strings.isEmpty(textError)}?'form-control':'form-control is-invalid'">
-            <div class="invalid-feedback" th:text="${textError}">Error text</div>
+<div class="container mt-5">
+    <form class="row row-cols-lg-auto g-3 align-items-center" th:method="get" th:action="@{/main}">
+        <div class="col-12">
+            <input type="text" class="form-control" id="inputFilter" name="filter" th:value="${filter}"
+                   placeholder="Search by tag">
         </div>
-
-        <div class="mb-3 col-sm-3">
-            <input type="text" name="tag" placeholder="Тэг" class="form-control"
-                   th:value="${#strings.isEmpty(message)}?'':${message.getTag()}"
-                   th:class="${#strings.isEmpty(tagError)}?'form-control':'form-control is-invalid'">
-            <div class="invalid-feedback" th:text="${tagError}">Error text</div>
-
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary">Search</button>
         </div>
-        <div class="input-group col-sm-3">
-            <input type="file" name="file" class="form-control" id="inputGroupFile04"
-                   aria-describedby="inputGroupFileAddon04" aria-label="Upload">
-        </div>
-        <button class="btn btn-outline-secondary" type="submit" id="inputGroupFileAddon04">Отправить</button>
     </form>
-</div>
 
+    <a class="btn btn-primary my-3" data-bs-toggle="collapse" href="#collapseExample" role="button"
+       aria-expanded="false"
+       aria-controls="collapseExample">
+        Add new message
+    </a>
 
-<p>Список сообщений</p>
-<div class="row row-cols-1 row-cols-md-3 g-1">
-    <div th:each="(message:${messages})">
+    <div th:class="${!#strings.isEmpty(textError)}?'collapse show':'collapse'" id="collapseExample">
 
-        <div class="card my-3 w-50">
-            <div th:if="${message.getFileName()!=null}">
-                <img class="card-img-top" th:src="@{'/img/' + ${message.getFileName()}}"/>
+        <form th:action="@{/main}" th:method="post" enctype="multipart/form-data">
+            <div class="mb-3 col-sm-6">
+                <input type="text" name="text" placeholder="Текст сообщения"
+                       th:value="${#strings.isEmpty(message)}?'':${message.getText()}"
+                       th:class="${#strings.isEmpty(textError)}?'form-control':'form-control is-invalid'">
+                <div class="invalid-feedback" th:text="${textError}">Error text</div>
             </div>
-            <div class="m-2">
-                <span th:text="${message.getText()}"></span><br>
-                <i th:text="'#' + ${message.getTag()}"></i>
+
+            <div class="mb-3 col-sm-3">
+                <input type="text" name="tag" placeholder="Тэг" class="form-control"
+                       th:value="${#strings.isEmpty(message)}?'':${message.getTag()}"
+                       th:class="${#strings.isEmpty(tagError)}?'form-control':'form-control is-invalid'">
+                <div class="invalid-feedback" th:text="${tagError}">Error text</div>
+
             </div>
-            <div class="card-footer text-body-secondary">
-                <a th:href="@{/user-message/{id}(id=${message.getAuthor().getId()})}"
-                   th:text="${message.getAuthor().getUsername()}"></a>
-                <div th:if="${message.getAuthor().getId} == ${#authentication.principal.id}">
-                    <a class="btn btn-primary"
-                       th:href="@{/user-message/{id}(messageId=${message.getId()},id=${message.getAuthor().getId()})}"
-                       th:text="Edit"></a>
+            <div class="input-group col-sm-3">
+                <input type="file" name="file" class="form-control" id="inputGroupFile04"
+                       aria-describedby="inputGroupFileAddon04" aria-label="Upload">
+            </div>
+            <button class="btn btn-outline-secondary" type="submit" id="inputGroupFileAddon04">Отправить</button>
+        </form>
+    </div>
+
+
+    <p>Список сообщений</p>
+    <div class="row row-cols-3 row-cols-md-3 g-4">
+        <div th:each="(message:${messages})">
+
+            <div class="col">
+                <div class="card w-50">
+                    <div th:if="${message.getFileName()!=null}">
+                        <img class="card-img-top" th:src="@{'/img/' + ${message.getFileName()}}"/>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-text">
+                            <span th:text="${message.getText()}"></span><br>
+                            <i th:text="'#' + ${message.getTag()}"></i>
+                        </div>
+                    </div>
+                    <div class="card-footer text-body-secondary">
+                        <a th:href="@{/user-message/{id}(id=${message.getAuthor().getId()})}"
+                           th:text="${message.getAuthor().getUsername()}"></a>
+                        <div th:if="${message.getAuthor().getId} == ${#authentication.principal.id}">
+                            <a class="btn btn-primary"
+                               th:href="@{/user-message/{id}(messageId=${message.getId()},id=${message.getAuthor().getId()})}"
+                               th:text="Edit"></a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
