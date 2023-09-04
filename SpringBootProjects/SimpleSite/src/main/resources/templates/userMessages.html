@@ -25,7 +25,7 @@
                 <div clas="card">
                     <div class="card-title">Subscriptions</div>
                     <h3 class="card-text">
-                        <a th:href="@{/user/subscriptions/${userChanel.getId}}" th:text="${subscriptionsCount}"></a>
+                        <a th:href="@{/user/subscriptions/{id}/list(id=${userChanel.getId})}" th:text="${subscriptionsCount}"></a>
                     </h3>
                 </div>
             </div>
@@ -33,7 +33,7 @@
                 <div clas="card">
                     <div class="card-title">Subscribers</div>
                     <h3 class="card-text">
-                        <a th:href="@{/user/subscribers/${userChanel.getId}}" th:text="${subscribersCount}"></a>
+                        <a th:href="@{/user/subscribers/{id}/list(id=${userChanel.getId})}" th:text="${subscribersCount}"></a>
                     </h3>
                 </div>
             </div>
