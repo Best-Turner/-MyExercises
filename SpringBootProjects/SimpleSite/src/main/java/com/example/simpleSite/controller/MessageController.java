@@ -3,6 +3,7 @@ package com.example.simpleSite.controller;
 import com.example.simpleSite.models.Message;
 import com.example.simpleSite.models.User;
 import com.example.simpleSite.repositories.MessageRepo;
+import com.example.simpleSite.service.MessageService;
 import jakarta.validation.Valid;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,13 +24,15 @@ import java.util.Set;
 import java.util.UUID;
 
 @Controller
-public class MainController {
+public class MessageController {
     private final MessageRepo messageRepo;
+    private final MessageService messageService;
     @Value("${upload.path}")
     private String uploadPath;
 
-    public MainController(MessageRepo messageRepo) {
+    public MessageController(MessageRepo messageRepo, MessageService messageService) {
         this.messageRepo = messageRepo;
+        this.messageService = messageService;
     }
 
     @GetMapping("/")
@@ -40,14 +43,11 @@ public class MainController {
     @GetMapping("/main")
     public String main(@RequestParam(required = false, defaultValue = "") String filter,
                        Model model) {
-        Iterable<Message> messages;
-        if (filter != null && !filter.isEmpty()) {
-            messages = messageRepo.findByTag(filter);
-            model.addAttribute("filter", filter);
-        } else {
-            messages = messageRepo.findAll();
-        }
+        Iterable<Message> messages = messageService.messageList(filter);
+
         model.addAttribute("messages", messages);
+        model.addAttribute("filter", filter);
+
         return "main";
     }
 
@@ -72,19 +72,20 @@ public class MainController {
         return "redirect:main";
     }
 
-    @GetMapping("/user-message/{user}")
+    @GetMapping("/user-message/{author}")
     public String userMessages(@AuthenticationPrincipal User currentUser,
-                               @PathVariable User user,
+                               @PathVariable User author,
                                @RequestParam(required = false) Message messageId,
                                Model model) {
-        Set<Message> messages = user.getMessages();
+        Set<Message> messages = messageService.messageListForUser(author);
+        model.addAttribute("subscriptionsCount", author.getSubscriptions().size());
+        model.addAttribute("subscribersCount", author.getSubscribers().size());
+        model.addAttribute("isCurrentUser", currentUser.equals(author));
+        model.addAttribute("isSubscriber", author.getSubscribers().contains(currentUser));
+        model.addAttribute("userChanel", author);
         model.addAttribute("messages", messages);
-        model.addAttribute("subscriptionsCount", user.getSubscriptions().size());
-        model.addAttribute("subscribersCount", user.getSubscribers().size());
-        model.addAttribute("isSubscriber", user.getSubscribers().contains(currentUser));
-        model.addAttribute("isCurrentUser", currentUser.equals(user));
         model.addAttribute("message", messageId);
-        model.addAttribute("userChanel", user);
+
         return "userMessages";
     }
 

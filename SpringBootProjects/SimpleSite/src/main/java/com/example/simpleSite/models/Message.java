@@ -1,8 +1,12 @@
 package com.example.simpleSite.models;
 
+import com.example.simpleSite.models.util.MessageHelper;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import org.hibernate.validator.constraints.Length;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "message")
@@ -16,6 +20,13 @@ public class Message {
     private String text;
     @Length(message = "Tag too long (more that 255)", max = 255)
     private String tag;
+
+    @ManyToMany
+    @JoinTable(
+            name = "message_likes",
+            joinColumns = {@JoinColumn(name = "message_id")},
+            inverseJoinColumns = {@JoinColumn(name = "user_id")})
+    private Set<User> likes = new HashSet<>();
 
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -74,6 +85,14 @@ public class Message {
     }
 
     public String getAuthorName() {
-        return author != null ? author.getUsername() : "<none>";
+       return MessageHelper.getAuthorName(author);
+    }
+
+    public Set<User> getLikes() {
+        return likes;
+    }
+
+    public void setLikes(Set<User> likes) {
+        this.likes = likes;
     }
 }

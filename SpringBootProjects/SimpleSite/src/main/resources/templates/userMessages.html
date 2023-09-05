@@ -5,6 +5,7 @@
     <title>Message editor</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <script src="https://kit.fontawesome.com/e8fa7fca5c.js" crossorigin="anonymous"></script>
 </head>
 <body>
 <div th:insert="~{header::copy}"></div>
@@ -25,7 +26,8 @@
                 <div clas="card">
                     <div class="card-title">Subscriptions</div>
                     <h3 class="card-text">
-                        <a th:href="@{/user/subscriptions/{id}/list(id=${userChanel.getId})}" th:text="${subscriptionsCount}"></a>
+                        <a th:href="@{/user/subscriptions/{id}/list(id=${userChanel.getId})}"
+                           th:text="${subscriptionsCount}"></a>
                     </h3>
                 </div>
             </div>
@@ -33,7 +35,8 @@
                 <div clas="card">
                     <div class="card-title">Subscribers</div>
                     <h3 class="card-text">
-                        <a th:href="@{/user/subscribers/{id}/list(id=${userChanel.getId})}" th:text="${subscribersCount}"></a>
+                        <a th:href="@{/user/subscribers/{id}/list(id=${userChanel.getId})}"
+                           th:text="${subscribersCount}"></a>
                     </h3>
                 </div>
             </div>
@@ -82,13 +85,20 @@
                     <span th:text="${message.getText()}"></span><br>
                     <i th:text="'#' + ${message.getTag()}"></i>
                 </div>
-                <div class="card-footer text-body-secondary">
-                    <a th:href="@{/user-message/{id}(id=${message.getAuthor().getId()})}"
-                       th:text="${message.getAuthor().getUsername()}"></a>
-                    <div th:if="${isCurrentUser}">
-                        <a class="btn btn-primary"
-                           th:href="@{/user-message/{id}(messageId=${message.getId()},id=${message.getAuthor().getId()})}"
-                           th:text="Edit"></a>
+                <div class="card-footer text-body-secondary container">
+                    <div class="row">
+                        <a class="col align-self-center"
+                           th:href="@{/user-message/{id}(id=${message.getAuthor().getId()})}"
+                           th:text="${message.getAuthor().getUsername()}"></a>
+                        <a class="col align-self-center" href="#">
+                                <i class="fa-sharp fa-regular fa-heart" style="color: #3217ba;"></i>
+                        </a>
+                        <div class="col align-self-center">
+                        <div th:if="${isCurrentUser}">
+                            <a class="col btn btn-primary"
+                               th:href="@{/user-message/{id}(messageId=${message.getId()},id=${message.getAuthor().getId()})}">Edit</a>
+                        </div>
+                        </div>
                     </div>
                 </div>
             </div>
