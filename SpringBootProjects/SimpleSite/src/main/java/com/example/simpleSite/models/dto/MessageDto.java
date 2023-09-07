@@ -36,6 +36,10 @@ public class MessageDto {
         return tag;
     }
 
+    public User getAuthor() {
+        return author;
+    }
+
     public String getAuthorName() {
         return MessageHelper.getAuthorName(author);
     }

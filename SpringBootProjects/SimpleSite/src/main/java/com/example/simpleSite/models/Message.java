@@ -20,19 +20,15 @@ public class Message {
     private String text;
     @Length(message = "Tag too long (more that 255)", max = 255)
     private String tag;
-
     @ManyToMany
     @JoinTable(
             name = "message_likes",
             joinColumns = {@JoinColumn(name = "message_id")},
             inverseJoinColumns = {@JoinColumn(name = "user_id")})
     private Set<User> likes = new HashSet<>();
-
-
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User author;
-
     private String fileName;
 
     public Long getId() {

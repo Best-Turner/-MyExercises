@@ -78,8 +78,8 @@
     <div class="row row-cols-3 row-cols-md-3 g-4">
         <div th:each="(message:${messages})">
             <div class="card m-3">
-                <div th:if="${message.getFileName()!=null}">
-                    <img class="card-img-top" th:src="@{'/img/' + ${message.getFileName()}}"/>
+                <div th:if="${message.getFilename()!=null}">
+                    <img class="card-img-top" th:src="@{'/img/' + ${message.getFilename()}}"/>
                 </div>
                 <div class="m-2">
                     <span th:text="${message.getText()}"></span><br>
@@ -90,14 +90,18 @@
                         <a class="col align-self-center"
                            th:href="@{/user-message/{id}(id=${message.getAuthor().getId()})}"
                            th:text="${message.getAuthor().getUsername()}"></a>
-                        <a class="col align-self-center" href="#">
-                                <i class="fa-sharp fa-regular fa-heart" style="color: #3217ba;"></i>
+                        <a class="col align-self-center" th:href="@{/messages/{id}/like(id=${message.getId()})}">
+                            <div>
+                                <i th:if="${message.getMeLiked()}" class="fa-solid fa-heart" style="color: #125fe2;"></i>
+                                <i th:unless="${message.getMeLiked()}" class="fa-regular fa-heart" style="color: #125fe2;"></i>
+                                <i th:text="${message.getLikes()}"></i>
+                            </div>
                         </a>
                         <div class="col align-self-center">
-                        <div th:if="${isCurrentUser}">
-                            <a class="col btn btn-primary"
-                               th:href="@{/user-message/{id}(messageId=${message.getId()},id=${message.getAuthor().getId()})}">Edit</a>
-                        </div>
+                            <div th:if="${isCurrentUser}">
+                                <a class="col btn btn-primary"
+                                   th:href="@{/user-message/{id}(messageId=${message.getId()},id=${message.getAuthor().getId()})}">Edit</a>
+                            </div>
                         </div>
                     </div>
                 </div>

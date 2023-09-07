@@ -1,7 +1,7 @@
 package com.example.simpleSite.service;
 
-import com.example.simpleSite.models.Message;
 import com.example.simpleSite.models.User;
+import com.example.simpleSite.models.dto.MessageDto;
 import com.example.simpleSite.repositories.MessageRepo;
 import org.springframework.stereotype.Service;
 
@@ -17,15 +17,15 @@ public class MessageService {
         this.messageRepo = messageRepo;
     }
 
-    public List<Message> messageList(String filter) {
+    public List<MessageDto> messageList(String filter, User user) {
         if (filter != null && !filter.isEmpty()) {
-            return messageRepo.findByTag(filter);
+            return messageRepo.findByTag(filter, user);
         } else {
-            return (List<Message>) messageRepo.findAll();
+            return messageRepo.findAll(user);
         }
     }
 
-    public Set<Message> messageListForUser(User author) {
-        return messageRepo.findByUser(author);
+    public Set<MessageDto> messageListForUser(User author, User currentUser) {
+        return messageRepo.findByUser(author, currentUser);
     }
 }

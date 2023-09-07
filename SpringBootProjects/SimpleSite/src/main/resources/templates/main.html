@@ -58,8 +58,8 @@
 
             <div class="col">
                 <div class="card w-50">
-                    <div th:if="${message.getFileName()!=null}">
-                        <img class="card-img-top" th:src="@{'/img/' + ${message.getFileName()}}"/>
+                    <div th:if="${message.getFilename()!=null}">
+                        <img class="card-img-top" th:src="@{'/img/' + ${message.getFilename()}}"/>
                     </div>
                     <div class="card-body">
                         <div class="card-text">

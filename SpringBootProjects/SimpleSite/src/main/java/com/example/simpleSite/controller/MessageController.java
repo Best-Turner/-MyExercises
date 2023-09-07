@@ -2,6 +2,7 @@ package com.example.simpleSite.controller;
 
 import com.example.simpleSite.models.Message;
 import com.example.simpleSite.models.User;
+import com.example.simpleSite.models.dto.MessageDto;
 import com.example.simpleSite.repositories.MessageRepo;
 import com.example.simpleSite.service.MessageService;
 import jakarta.validation.Valid;
@@ -11,11 +12,11 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,8 +43,9 @@ public class MessageController {
 
     @GetMapping("/main")
     public String main(@RequestParam(required = false, defaultValue = "") String filter,
-                       Model model) {
-        Iterable<Message> messages = messageService.messageList(filter);
+                       Model model,
+                       @AuthenticationPrincipal User user) {
+        Iterable<MessageDto> messages = messageService.messageList(filter, user);
 
         model.addAttribute("messages", messages);
         model.addAttribute("filter", filter);
@@ -77,7 +79,7 @@ public class MessageController {
                                @PathVariable User author,
                                @RequestParam(required = false) Message messageId,
                                Model model) {
-        Set<Message> messages = messageService.messageListForUser(author);
+        Set<MessageDto> messages = messageService.messageListForUser(author, currentUser);
         model.addAttribute("subscriptionsCount", author.getSubscriptions().size());
         model.addAttribute("subscribersCount", author.getSubscribers().size());
         model.addAttribute("isCurrentUser", currentUser.equals(author));
@@ -124,5 +126,26 @@ public class MessageController {
         }
     }
 
+    @GetMapping("/messages/{message}/like")
+    public String like(@AuthenticationPrincipal User currentUser,
+                       @PathVariable Message message,
+                       RedirectAttributes redirectAttributes,
+                       @RequestHeader(required = false) String referer) {
+
+        Set<User> likes = message.getLikes();
+        if (likes.contains(currentUser)) {
+            likes.remove(currentUser);
+
+        } else {
+            likes.add(currentUser);
+        }
+        messageRepo.save(message);
+        UriComponents components = UriComponentsBuilder.fromHttpUrl(referer).build();
+
+        components.getQueryParams()
+                .entrySet()
+                .forEach(pair -> redirectAttributes.addAttribute(pair.getKey(), pair.getValue()));
+        return "redirect:" + components.getPath();
+    }
 
 }
