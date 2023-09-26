@@ -1,6 +1,6 @@
-package com.example.simpleSiteRest.demo.controller;
+package com.example.simpleSiteRest.controller;
 
-import com.example.simpleSiteRest.demo.exception.NotFoundException;
+import com.example.simpleSiteRest.exception.NotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -11,6 +11,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("message")
 public class MessageController {
+
 
     private int counter = 4;
 
