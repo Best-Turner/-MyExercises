@@ -2,15 +2,12 @@ package com.example.simpleSiteRest.controller;
 
 
 import com.example.simpleSiteRest.model.Message;
-import com.example.simpleSiteRest.model.User;
 import com.example.simpleSiteRest.model.Views;
 import com.example.simpleSiteRest.repo.MessageRepo;
 import com.example.simpleSiteRest.repo.UserDetailsRepo;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -28,20 +25,9 @@ public class MessageController {
         this.userDetailsRepo = userDetailsRepo;
     }
 
-
     @GetMapping
     @JsonView(Views.IdName.class)
     public List<Message> index() {
-//        userDetailsRepo.findOne(principal.getAttribute("sub")).orElseGet(()-> {
-//            User user = new User();
-//            user.setId(principal.getAttribute("sub"));
-//            user.setName(principal.getAttribute("name"));
-//            user.setEmail(principal.getAttribute("email"));
-//            user.setLocale(principal.getAttribute("locale"));
-//            user.set(principal.getAttribute("locale"));
-//
-//            userDetailsRepo.save(user);
-//        });
         return messageRepo.findAll();
     }
 
