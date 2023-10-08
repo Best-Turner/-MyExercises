@@ -1,17 +1,19 @@
 package services;
 
-import domain.model.TransactionType;
 import domain.model.Player;
+import domain.model.Transaction;
 
 public interface PlayerService {
 
     boolean performPlayerRegistration(String playerName, String playerPassword);
 
-    Player performPlayerAuthentication(String username, String password);
+    String performPlayerAuthentication(String username, String password);
 
-    double getBalance(Player player);
+    double getBalance(String playerId);
 
-    void makeTransaction(Player player, TransactionType type, double amount);
+    Player getPlayer(String playerId);
 
-    void getPlayerTransactionHistory(Player player);
+    StringBuilder getPlayerTransactionHistory(String playerId);
+
+    boolean updateBalance(Transaction transaction, String typeOperation);
 }
