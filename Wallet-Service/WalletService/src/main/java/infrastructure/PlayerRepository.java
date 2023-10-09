@@ -16,5 +16,6 @@ public interface PlayerRepository {
     Player getPlayer(String playerId);
 
     List<Transaction> getPlayerTransactions(String playerId);
+    int getCountPlayers();
 
 }

@@ -16,4 +16,5 @@ public interface PlayerService {
     StringBuilder getPlayerTransactionHistory(String playerId);
 
     boolean updateBalance(Transaction transaction, String typeOperation);
+
 }

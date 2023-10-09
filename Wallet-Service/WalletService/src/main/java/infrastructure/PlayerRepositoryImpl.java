@@ -36,4 +36,9 @@ public class PlayerRepositoryImpl implements PlayerRepository {
         return playersDB.get(playerId).getTransactionHistory();
     }
 
+    @Override
+    public int getCountPlayers() {
+        return playersDB.size();
+    }
+
 }
