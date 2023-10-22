@@ -2,6 +2,8 @@ package com.example.BookLibraryAPI.controller;
 
 import com.example.BookLibraryAPI.model.Book;
 import com.example.BookLibraryAPI.service.BookService;
+import com.example.BookLibraryAPI.util.BookNotCreatedException;
+import com.example.BookLibraryAPI.util.BookNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +41,7 @@ public class BookController {
         if (bookById != null) {
             return new ResponseEntity<>(bookById, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            throw new BookNotFoundException("Запрашиваемая книга не найдена");
         }
     }
 
@@ -57,15 +59,25 @@ public class BookController {
     //Изменение книги с указанным ID
     @PutMapping("/{id}")
     public ResponseEntity<Book> updateBook(@PathVariable Long id, @RequestBody Book book) {
-        service.updateBook(id, book);
-        return new ResponseEntity<>(HttpStatus.OK);
+        Book bookById = service.getBookById(id);
+        if (bookById != null) {
+            service.updateBook(id, book);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            throw new BookNotCreatedException("Невозможно обновить книгу с указанным ID");
+        }
     }
 
     //Удаление книги по ID
     @DeleteMapping("/{id}")
     public ResponseEntity<Book> deleteBookById(@PathVariable Long id) {
 
-        service.deleteBookById(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        boolean executionResult = service.deleteBookById(id);
+        if (executionResult) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            throw new BookNotFoundException("Книги с таким ID не найдено");
+        }
     }
+
 }

@@ -8,7 +8,7 @@ public interface BookService {
 
     void saveBook(Book book);
     void updateBook(long id, Book book);
-    void deleteBookById(long id);
+    boolean deleteBookById(long id);
     List<Book> showAllBook();
     Book getBookById(long id);
 
