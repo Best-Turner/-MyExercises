@@ -4,9 +4,12 @@ import com.example.BookLibraryAPI.model.Book;
 import com.example.BookLibraryAPI.service.BookService;
 import com.example.BookLibraryAPI.util.BookNotCreatedException;
 import com.example.BookLibraryAPI.util.BookNotFoundException;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,7 +30,6 @@ public class BookController {
     public ResponseEntity<List<Book>> allBooks() {
         List<Book> books = service.showAllBook();
         if (books.isEmpty()) {
-            System.out.println("Not Found");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } else {
             return new ResponseEntity<>(books, HttpStatus.OK);
@@ -47,8 +49,12 @@ public class BookController {
 
     //Сохранение новой книги
     @PostMapping
-    public ResponseEntity<Book> saveBook(@RequestBody Book book) {
+    public ResponseEntity<Book> saveBook(@RequestBody @Valid Book book, BindingResult bindingResult) {
         if (book != null) {
+            if (bindingResult.hasErrors()) {
+                StringBuilder errorValidation = getErrorValidation(bindingResult);
+                throw new BookNotCreatedException(errorValidation.toString());
+            }
             service.saveBook(book);
             return new ResponseEntity<>(HttpStatus.CREATED);
         } else {
@@ -58,9 +64,13 @@ public class BookController {
 
     //Изменение книги с указанным ID
     @PutMapping("/{id}")
-    public ResponseEntity<Book> updateBook(@PathVariable Long id, @RequestBody Book book) {
+    public ResponseEntity<Book> updateBook(@PathVariable Long id, @RequestBody @Valid Book book, BindingResult bindingResult) {
         Book bookById = service.getBookById(id);
         if (bookById != null) {
+            if (bindingResult.hasErrors()) {
+                StringBuilder errorValidation = getErrorValidation(bindingResult);
+                throw new BookNotCreatedException(errorValidation.toString());
+            }
             service.updateBook(id, book);
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
@@ -80,4 +90,15 @@ public class BookController {
         }
     }
 
+    private StringBuilder getErrorValidation(BindingResult bindingResult) {
+        StringBuilder builder = new StringBuilder();
+        List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+        for (FieldError error : fieldErrors) {
+            builder.append(error.getField())
+                    .append(" - ")
+                    .append(error.getDefaultMessage())
+                    .append("\n");
+        }
+        return builder;
+    }
 }

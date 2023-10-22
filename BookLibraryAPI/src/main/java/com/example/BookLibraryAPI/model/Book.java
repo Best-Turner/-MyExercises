@@ -2,6 +2,10 @@ package com.example.BookLibraryAPI.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Size;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.xml.crypto.Data;
@@ -14,10 +18,15 @@ public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @NotEmpty(message = "Название книги не может быть пустым")
+    @Size(message = "Название книги должно быть от 2 до 50 символов", min = 2, max = 50)
     private String title;
+    @NotEmpty(message = "У книги обязательно должен быть автор")
     private String author;
     @Temporal(TemporalType.DATE)
     @DateTimeFormat(pattern = "dd/MM/yyyy")
+    @NotNull(message = "Дата не должна быть пустой")
+    @Past(message = "Дата должна быть прошедшей")
     private Date publicationYear;
 
 
@@ -28,8 +37,6 @@ public class Book {
         this.author = author;
         this.publicationYear = publicationYear;
     }
-
-
 
     public Long getId() {
         return id;
