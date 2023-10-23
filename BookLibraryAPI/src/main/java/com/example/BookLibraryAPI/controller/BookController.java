@@ -6,6 +6,7 @@ import com.example.BookLibraryAPI.util.BookNotCreatedException;
 import com.example.BookLibraryAPI.util.BookNotFoundException;
 import jakarta.validation.Valid;
 import org.apache.logging.log4j.LogManager;
+
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,13 +32,13 @@ public class BookController {
     //Получить список всех книг
     @GetMapping
     public ResponseEntity<List<Book>> allBooks() {
+        logger.info("Метод GET: получение списка всех книг");
         List<Book> books = service.showAllBook();
         if (books.isEmpty()) {
+            logger.info("Список книг не получен. " + HttpStatus.OK);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } else {
-            System.getProperty("user.dir");
-            logger.debug("Это сообщение будет залогировано с уровнем DEBUG.");
-            logger.info("Это сообщение будет залогировано с уровнем INFO.");
+            logger.info("Список книг получен. " + HttpStatus.OK);
             return new ResponseEntity<>(books, HttpStatus.OK);
         }
     }
@@ -45,10 +46,13 @@ public class BookController {
     //Получить книгу по её ID
     @GetMapping("/{id}")
     public ResponseEntity<Book> getBookById(@PathVariable Long id) {
+        logger.info("Метод GET: Запрос книги с id = " + id);
         Book bookById = service.getBookById(id);
         if (bookById != null) {
+            logger.info("Книга с id = " + id + " получена " + HttpStatus.OK);
             return new ResponseEntity<>(bookById, HttpStatus.OK);
         } else {
+            logger.info("Книга с id = " + id + "не получена " + HttpStatus.BAD_REQUEST);
             throw new BookNotFoundException("Запрашиваемая книга не найдена");
         }
     }
@@ -56,11 +60,14 @@ public class BookController {
     //Сохранение новой книги
     @PostMapping
     public ResponseEntity<Book> saveBook(@RequestBody @Valid Book book, BindingResult bindingResult) {
+        logger.info("Запрос на сохранение книги");
         if (book != null) {
             if (bindingResult.hasErrors()) {
                 StringBuilder errorValidation = getErrorValidation(bindingResult);
+                logger.info("Книга не сохранена. Причина - " + bindingResult);
                 throw new BookNotCreatedException(errorValidation.toString());
             }
+            logger.info("Книга сохранена");
             service.saveBook(book);
             return new ResponseEntity<>(HttpStatus.CREATED);
         } else {
@@ -71,6 +78,7 @@ public class BookController {
     //Изменение книги с указанным ID
     @PutMapping("/{id}")
     public ResponseEntity<Book> updateBook(@PathVariable Long id, @RequestBody @Valid Book book, BindingResult bindingResult) {
+        logger.info("Метод POST: Запрос на изменение книги с id = " + id);
         Book bookById = service.getBookById(id);
         if (bookById != null) {
             if (bindingResult.hasErrors()) {
@@ -87,12 +95,14 @@ public class BookController {
     //Удаление книги по ID
     @DeleteMapping("/{id}")
     public ResponseEntity<Book> deleteBookById(@PathVariable Long id) {
-
+        logger.info("Метод DELETE: Запрос на удаление книги с id = " + id);
         boolean executionResult = service.deleteBookById(id);
         if (executionResult) {
+            logger.info("Книга с id = " + id + " удалена");
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
-            throw new BookNotFoundException("Книги с таким ID не найдено");
+            logger.info("Ошибка удаления кгиги \nКнига с таким ID не найдена");
+            throw new BookNotFoundException("Книга с таким ID не найдена");
         }
     }
 
