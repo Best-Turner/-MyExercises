@@ -8,6 +8,7 @@ import services.TransactionService;
 import services.TransactionServiceImpl;
 
 public class Main {
+
     public static void main(String[] args) {
         PlayerService playerService = new PlayerServiceImpl();
         TransactionRepository transactionRepository = new TransactionRepositoryImpl();
