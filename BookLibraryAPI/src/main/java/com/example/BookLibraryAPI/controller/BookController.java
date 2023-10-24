@@ -35,8 +35,8 @@ public class BookController {
         logger.info("Метод GET: получение списка всех книг");
         List<Book> books = service.showAllBook();
         if (books.isEmpty()) {
-            logger.info("Список книг не получен. " + HttpStatus.OK);
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            logger.info("Список книг не получен. " + HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else {
             logger.info("Список книг получен. " + HttpStatus.OK);
             return new ResponseEntity<>(books, HttpStatus.OK);
