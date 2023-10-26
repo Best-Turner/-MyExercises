@@ -61,18 +61,22 @@ public class BookController {
     @PostMapping
     public ResponseEntity<Book> saveBook(@RequestBody @Valid Book book, BindingResult bindingResult) {
         logger.info("Запрос на сохранение книги");
-        if (book != null) {
-            if (bindingResult.hasErrors()) {
-                StringBuilder errorValidation = getErrorValidation(bindingResult);
-                logger.info("Книга не сохранена. Причина - " + bindingResult);
-                throw new BookNotCreatedException(errorValidation.toString());
+        if (bindingResult.hasErrors()) {
+            StringBuilder builder = new StringBuilder();
+            List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+            for (FieldError error : fieldErrors) {
+                builder.append(error.getField())
+                        .append(" - ")
+                        .append(error.getDefaultMessage());
+                builder.append("\n");
             }
-            logger.info("Книга сохранена");
-            service.saveBook(book);
-            return new ResponseEntity<>(HttpStatus.CREATED);
-        } else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            String errorMessage = builder.toString();
+            logger.info("Книга не сохранена. Причина - " + errorMessage);
+            throw new BookNotCreatedException(builder.toString());
         }
+        logger.info("Книга сохранена");
+        service.saveBook(book);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     //Изменение книги с указанным ID
@@ -101,7 +105,7 @@ public class BookController {
             logger.info("Книга с id = " + id + " удалена");
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
-            logger.info("Ошибка удаления кгиги \nКнига с таким ID не найдена");
+            logger.info("Ошибка удаления книги \nКнига с таким ID не найдена");
             throw new BookNotFoundException("Книга с таким ID не найдена");
         }
     }

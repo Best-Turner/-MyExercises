@@ -2,6 +2,7 @@ package com.example.BookLibraryAPI.controller;
 
 import com.example.BookLibraryAPI.model.Book;
 import com.example.BookLibraryAPI.service.BookService;
+import com.example.BookLibraryAPI.util.BookNotCreatedException;
 import com.example.BookLibraryAPI.util.BookNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,7 +30,7 @@ class BookControllerTest {
 
     @InjectMocks
     private BookController controller;
-    private Book expectedBook = null;
+    private Book book = null;
 
     private static List<Book> bookList;
 
@@ -37,7 +38,7 @@ class BookControllerTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        expectedBook = new Book("Название книги", "Автор", new Date(2020 - 10 - 12));
+        book = new Book("Название книги", "Автор", new Date(2020 - 10 - 12));
         bookList = new ArrayList<>();
         bookList.add(new Book("test1", "test1", new Date(2021 - 10 - 10)));
         bookList.add(new Book("test2", "test2", new Date(2022 - 11 - 11)));
@@ -47,20 +48,30 @@ class BookControllerTest {
 
     @Test
     public void whenGetBookByIdThenReturnBookAndHttpStatus200() {
-        // Ожидаемые значения
         long bookId = 1L;
-
-        // Настройка мока для сервиса
-        when(service.getBookById(bookId)).thenReturn(expectedBook);
-
-        // Вызов метода контроллера
+        when(service.getBookById(bookId)).thenReturn(book);
         ResponseEntity<Book> response = controller.getBookById(bookId);
 
         verify(service).getBookById(bookId);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(expectedBook, response.getBody());
+        assertEquals(book, response.getBody());
 
     }
+
+    @Test
+    public void whenGetBookByNonExistentIdThenReturnExceptionMessage() {
+        long bookId = 1L;
+        when(service.getBookById(bookId)).thenReturn(null);
+
+        try {
+            controller.getBookById(bookId);
+            fail("Ожидается исключение BookNotFoundException");
+        } catch (BookNotFoundException ex) {
+            assertTrue(ex.getMessage().contentEquals("Запрашиваемая книга не найдена"));
+        }
+        verify(service, times(1)).getBookById(bookId);
+    }
+
 
     @Test
     public void whenGetListBooksThenMustReturnBooksAndStatus200() {
@@ -94,24 +105,76 @@ class BookControllerTest {
     @Test
     public void whenDeleteBookWithNonExistentIdThenThrowBookNotFoundException() {
         long bookId = 1L;
-        when(service.deleteBookById(bookId)).thenThrow(new BookNotFoundException("Книга с таким ID не найдена"));
+        when(service.deleteBookById(bookId)).thenReturn(false);
         try {
-            verify(service).deleteBookById(bookId);
-            fail("Ожидалось исключение BookNotFoundException()");
-        } catch (BookNotFoundException ex) {
-            verify(service).deleteBookById(bookId);
+            controller.deleteBookById(bookId);
+            fail("Ожидалось исключение BookNotFoundException");
+        } catch (BookNotFoundException e) {
+            assertEquals("Книга с таким ID не найдена", e.getMessage());
         }
     }
 
     @Test
     public void whenSaveBookReturnHttpStatus200() {
         when(bindingResult.hasErrors()).thenReturn(false);
-        doNothing().when(service).saveBook(expectedBook);
+        doNothing().when(service).saveBook(book);
 
-        ResponseEntity<Book> response = controller.saveBook(expectedBook, bindingResult);
-        verify(service, times(1)).saveBook(expectedBook);
+        ResponseEntity<Book> response = controller.saveBook(book, bindingResult);
+        verify(service, times(1)).saveBook(book);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
 
     }
 
+    @Test
+    public void whenSaveBookWithInvalidDataThenReturnExceptionMessage() {
+        long bookId = 1L;
+        when(service.getBookById(bookId)).thenReturn(book);
+        when(bindingResult.hasErrors()).thenReturn(true);
+
+        try {
+            controller.saveBook(book, bindingResult);
+            fail("Ожидалось исключение BookNotCreatedException");
+        } catch (BookNotCreatedException ex) {
+            assertNotNull(ex.getMessage());
+        }
+        verify(service, never()).saveBook(book);
+    }
+
+
+    @Test
+    public void whenUpdateBookWithExistingBookThenReturnHttpStatus200() {
+        long bookId = 1L;
+        when(service.getBookById(bookId)).thenReturn(book);
+
+        ResponseEntity<Book> response = controller.updateBook(bookId, book, bindingResult);
+        verify(service).updateBook(bookId, book);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    public void whenUpdateNonExistentBookThenReturnExceptionMessage() {
+        long bookId = 1L;
+        when(service.getBookById(bookId)).thenReturn(null);
+        try {
+            controller.updateBook(bookId, book, bindingResult);
+            fail("Ожидалось исключение BookNotCreatedException");
+        } catch (BookNotCreatedException ex) {
+            assertEquals("Невозможно обновить книгу с указанным ID", ex.getMessage());
+        }
+    }
+
+    @Test
+    public void whenUpdateExistingBookWithInvalidDataReturn() {
+        long bookId = 1L;
+
+        when(service.getBookById(bookId)).thenReturn(book);
+        when(bindingResult.hasErrors()).thenReturn(true);
+        try {
+            controller.updateBook(bookId, book, bindingResult);
+            fail("Ожидалось исключение BookNotCreatedException");
+        } catch (BookNotCreatedException ex) {
+            assertNotNull(ex.getMessage());
+        }
+        verify(service, never()).updateBook(bookId, book);
+    }
 }
