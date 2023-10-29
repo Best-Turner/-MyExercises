@@ -2,7 +2,6 @@ package com.example.BookLibraryAPI.service;
 
 import com.example.BookLibraryAPI.model.Book;
 import com.example.BookLibraryAPI.repository.BookRepo;
-import com.example.BookLibraryAPI.util.BookNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,7 +28,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public boolean deleteBookById(long id) {
-        Long exsistId = repository.isExsistId(id);
+        Long exsistId = repository.isExistId(id);
         if (exsistId != null) {
             repository.deleteById(id);
             return true;

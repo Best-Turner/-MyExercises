@@ -6,7 +6,11 @@
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
     <changeSet id="1" author="Aleksandr">
-
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="book"/>
+            </not>
+        </preConditions>
         <createTable tableName="book">
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints nullable="false" primaryKey="true"/>
@@ -17,14 +21,17 @@
             <column name="author" type="varchar(100)">
                 <constraints nullable="false"/>
             </column>
-            <column name="publicationYear" type="date">
+            <column name="publication_year" type="date">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
-    
+
     <changeSet id="V1-2" author="Aleksandr">
-        <loadData tableName="book" file="db.changelog/data/book-data.csv"/>
+        <preConditions onFail="MARK_RAN">
+            <tableIsEmpty tableName="book"/>
+        </preConditions>
+        <loadData tableName="book" file="db/data/book-data.csv"/>
     </changeSet>
 
 </databaseChangeLog>

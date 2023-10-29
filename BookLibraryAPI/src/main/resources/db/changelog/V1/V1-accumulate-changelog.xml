@@ -6,4 +6,5 @@
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
     <include file="V1-create-book-table.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

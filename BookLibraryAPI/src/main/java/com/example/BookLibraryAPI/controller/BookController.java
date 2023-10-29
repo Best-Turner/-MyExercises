@@ -74,8 +74,8 @@ public class BookController {
             logger.info("Книга не сохранена. Причина - " + errorMessage);
             throw new BookNotCreatedException(builder.toString());
         }
-        logger.info("Книга сохранена");
         service.saveBook(book);
+        logger.info("Книга сохранена");
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 

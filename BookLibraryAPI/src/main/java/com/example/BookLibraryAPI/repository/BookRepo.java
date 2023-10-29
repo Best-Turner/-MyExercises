@@ -11,6 +11,6 @@ import org.springframework.stereotype.Repository;
 public interface BookRepo extends JpaRepository<Book, Long> {
     @Query("select b.id from Book b where b.id=:id")
     @Transactional
-    Long isExsistId(@Param("id") Long id);
+    Long isExistId(@Param("id") Long id);
 
 }

@@ -8,11 +8,10 @@ import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.xml.crypto.Data;
 import java.util.Date;
 
 @Entity
-@Table(name = "books")
+@Table(name = "book")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Book {
     @Id
@@ -27,11 +26,13 @@ public class Book {
     @DateTimeFormat(pattern = "dd/MM/yyyy")
     @NotNull(message = "Дата не должна быть пустой")
     @Past(message = "Дата должна быть прошедшей")
+    @Column(name = "publicationYear")
     private Date publicationYear;
 
 
     public Book() {
     }
+
     public Book(String title, String author, Date publicationYear) {
         this.title = title;
         this.author = author;
