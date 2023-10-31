@@ -1,0 +1,17 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="1.6 insert transaction" author="Aleksandr">
+        <insert tableName="transaction" schemaName="model">
+            <column name="player_id" value="1"/>
+            <column name="transaction_code" value="AAAAAbbbbCCCC"/>
+            <column name="amount" valueNumeric="50"/>
+            <column name="type" value="CREDIT"/>
+
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

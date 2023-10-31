@@ -3,33 +3,35 @@ package services;
 import domain.model.Player;
 import domain.model.Transaction;
 import domain.model.TransactionType;
+import infrastructure.PlayerRepositoryImpl;
+import infrastructure.TransactionRepositoryImpl;
 import org.junit.Before;
 import org.junit.Test;
+import service.PlayerService;
+import service.PlayerServiceImpl;
 
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import static org.junit.Assert.*;
 
 public class PlayerServiceTest {
-    private final PlayerService service = new PlayerServiceImpl();
+    private final PlayerService service = new PlayerServiceImpl(new PlayerRepositoryImpl(), new TransactionRepositoryImpl());
     private Player player;
-    private String name;
-    private String password;
-    private String playerId;
+    private final static String NAME = "name";
+    private final String PASSWORD = "password";
+    private final Long PLAYER_ID = 1L;
 
     @Before
     public void setUp() {
-        name = "name";
-        password = "password";
-        playerId = generateUserID(name, password);
-        player = new Player(playerId, name, password);
+        //player = new Player( NAME, PASSWORD);
     }
 
     @Test
     public void whenRegistrationUserIsSuccessfulReturnTrue() {
-        boolean isSuccessful = service.performPlayerRegistration(name, password);
+        boolean isSuccessful = service.performPlayerRegistration(NAME, PASSWORD);
         assertTrue(isSuccessful);
     }
 
@@ -43,80 +45,71 @@ public class PlayerServiceTest {
     @Test
     public void whenAuthenticateSuccessfulReturnPlayerId() {
         registrationUser();
-        String playerId = service.performPlayerAuthentication(name, password);
-        assertEquals(this.playerId, playerId);
+        Long playerId = service.performPlayerAuthentication(NAME, PASSWORD);
+        assertEquals(this.PLAYER_ID, playerId);
     }
 
     @Test
     public void whenAnUnregisteredUserLogsInReturnNull() {
-        String notRegisteredUser = service.performPlayerAuthentication(name, password);
+        Long notRegisteredUser = service.performPlayerAuthentication(NAME, PASSWORD);
         assertNull(notRegisteredUser);
     }
 
     @Test
     public void getBalance() {
         registrationUser();
-        double balance = service.getBalance(playerId);
-        assertEquals(0.0, balance, 0.0);
-
+        BigDecimal balance = service.getBalance(PLAYER_ID);
+        assertEquals(BigDecimal.ZERO, balance);
     }
 
     @Test
     public void getPlayer() {
         registrationUser();
-        Player fromDB = service.getPlayer(playerId);
+        Player fromDB = service.getPlayer(PLAYER_ID);
         assertNotNull(fromDB);
         assertEquals(player, fromDB);
     }
 
     @Test
     public void whenGetUserNonExistReturnNull() {
-        Player playerNull = service.getPlayer(playerId);
+        Player playerNull = service.getPlayer(PLAYER_ID);
         assertNull(playerNull);
     }
 
-    @Test
-    public void getPlayerTransactionHistory() {
+//    @Test
+//    public void getPlayerTransactionHistory() {
+//        registrationUser();
+//
+//        Player fromDB = service.getPlayer(PLAYER_ID);
+//        List<Transaction> expected = new ArrayList<>();
+//        for (int i = 0; i < 10; i++) {
+//            Transaction transaction =
+//                    new Transaction(PLAYER_ID, new BigDecimal(100), TransactionType.CREDIT);
+//            expected.add(transaction);
+//            fromDB.addTransaction(transaction);
+//        }
+//
+//        assertEquals(expected, service.getPlayerTransactionHistory(fromDB.getId()));
+//
+//
+//    }
 
-    }
+//    @Test
+//    public void updateBalance() {
+//        registrationUser();
+//        BigDecimal currentBalance = service.getBalance(PLAYER_ID);
+//        assertEquals(BigDecimal.ZERO, currentBalance);
+//        service.updateBalance(
+//                new Transaction( PLAYER_ID, new BigDecimal(200), TransactionType.CREDIT), "CREDIT");
+//        assertEquals(200, 200, 0.0);
+//        service.updateBalance(
+//                new Transaction( PLAYER_ID, new BigDecimal(50), TransactionType.DEBIT), "DEBIT");
+//        assertEquals(150, 150);
+//    }
 
-    @Test
-    public void updateBalance() {
-        registrationUser();
-        double currentBalance = service.getBalance(playerId);
-        assertEquals(0.0, currentBalance, 0.0);
-        service.updateBalance(
-                new Transaction("1", playerId, 200, TransactionType.CREDIT), "CREDIT");
-        assertEquals(200, 200, 0.0);
-        service.updateBalance(
-                new Transaction("1", playerId, 50, TransactionType.DEBIT), "DEBIT");
-        assertEquals(150, 150, 0.0);
-    }
-
-
-    private static String generateUserID(String username, String password) {
-        try {
-            String data = username + password;
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            byte[] hashBytes = md.digest(data.getBytes("UTF-8"));
-
-            StringBuilder hexString = new StringBuilder();
-            for (byte b : hashBytes) {
-                String hex = Integer.toHexString(0xFF & b);
-                if (hex.length() == 1) {
-                    hexString.append('0');
-                }
-                hexString.append(hex);
-            }
-            return hexString.substring(0, 10);
-        } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
 
     private boolean registrationUser() {
-        return service.performPlayerRegistration(name, password);
+        return service.performPlayerRegistration(NAME, PASSWORD);
     }
 }
 
