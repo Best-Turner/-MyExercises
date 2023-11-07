@@ -18,7 +18,8 @@ import java.security.NoSuchAlgorithmException;
 import static org.junit.Assert.*;
 
 public class PlayerServiceTest {
-    private final PlayerService service = new PlayerServiceImpl(new PlayerRepositoryImpl(), new TransactionRepositoryImpl());
+    private final PlayerService service =
+            new PlayerServiceImpl(new PlayerRepositoryImpl(), new TransactionRepositoryImpl());
     private Player player;
     private final static String NAME = "name";
     private final String PASSWORD = "password";
