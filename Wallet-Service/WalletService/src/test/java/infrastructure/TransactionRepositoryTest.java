@@ -13,7 +13,7 @@ import static org.junit.Assert.*;
 
 public class TransactionRepositoryTest {
     private final TransactionRepository repository = new TransactionRepositoryImpl();
-    Transaction transaction;
+    private Transaction transaction;
 
     @Before
     public void setUp() throws Exception {

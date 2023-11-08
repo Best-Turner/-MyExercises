@@ -11,8 +11,10 @@ import service.PlayerService;
 import service.PlayerServiceImpl;
 import service.TransactionService;
 import service.TransactionServiceImpl;
+import util.DBConnector;
 
 import java.math.BigDecimal;
+import java.sql.Connection;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -31,8 +33,9 @@ public class TransactionServiceTest {
 
     @Before
     public void setUp() {
+        Connection connection = DBConnector.getConnection();
         playerService = new PlayerServiceImpl(
-                new PlayerRepositoryImpl(), new TransactionRepositoryImpl());
+                new PlayerRepositoryImpl(connection), new TransactionRepositoryImpl());
 
         repository = new TransactionRepositoryImpl();
         service = new TransactionServiceImpl(playerService, repository);

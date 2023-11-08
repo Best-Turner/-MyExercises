@@ -49,26 +49,25 @@ public class Main {
 
             liquibase.update();
             System.out.println("Миграции успешно выполнены!");
+
+            // Creating a service for working with players
+            PlayerRepository playerRepository = new PlayerRepositoryImpl(connection);
+            // Creating a transaction repository
+            TransactionRepository transactionRepository = new TransactionRepositoryImpl();
+
+            PlayerService playerService = new PlayerServiceImpl(playerRepository, transactionRepository);
+            // Creating a service for performing transactions using the player service and repository
+            TransactionService transactionService = new TransactionServiceImpl(playerService, transactionRepository);
+            // Creating a console input handler that uses player and transaction services
+            ConsoleInputHandler consoleInputHandler = new ConsoleInputHandler(playerService, transactionService);
+
+            // Infinite loop for handling user input
+            while (true) {
+                consoleInputHandler.start();
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
-        // Creating a service for working with players
-        PlayerRepository playerRepository = new PlayerRepositoryImpl();
-        // Creating a transaction repository
-        TransactionRepository transactionRepository = new TransactionRepositoryImpl();
-
-        PlayerService playerService = new PlayerServiceImpl(playerRepository, transactionRepository);
-        // Creating a service for performing transactions using the player service and repository
-        TransactionService transactionService = new TransactionServiceImpl(playerService, transactionRepository);
-        // Creating a console input handler that uses player and transaction services
-        ConsoleInputHandler consoleInputHandler = new ConsoleInputHandler(playerService, transactionService);
-
-        // Infinite loop for handling user input
-        while (true) {
-            consoleInputHandler.start();
-        }
-
     }
 }

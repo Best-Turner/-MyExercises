@@ -3,7 +3,6 @@ package infrastructure;
 import domain.model.Player;
 import domain.model.Transaction;
 import domain.model.TransactionType;
-import util.DBConnector;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -25,18 +24,23 @@ import java.util.List;
 public class PlayerRepositoryImpl implements PlayerRepository {
     //private final Map<String, Player> playersDB = new HashMap<>();
     private PreparedStatement preparedStatement;
-    private final Connection connection = DBConnector.getConnection();
+    private final Connection connection;
+
+
+    public PlayerRepositoryImpl(Connection connection) {
+        this.connection = connection;
+    }
 
 
     @Override
     public void savePlayer(String name, String password) throws SQLException {
-        String sqlSavePlayer = "INSERT INTO model.player (name, password, balance) VALUES(?, ?, 0.0);";
-
+        String sqlSavePlayer = "INSERT INTO model.player (name, password, balance) VALUES(?, ?, 0);";
+        connection.setAutoCommit(true);
         preparedStatement = connection.prepareStatement(sqlSavePlayer);
         preparedStatement.setString(1, name);
         preparedStatement.setString(2, password);
         preparedStatement.executeUpdate();
-        connection.commit();
+
     }
 
     @Override
@@ -65,13 +69,15 @@ public class PlayerRepositoryImpl implements PlayerRepository {
         preparedStatement = connection.prepareStatement(sqlGetPlayer);
         preparedStatement.setLong(1, playerId);
         ResultSet resultSet = preparedStatement.executeQuery();
-        resultSet.next();
-        String name = resultSet.getString("name");
-        String password = resultSet.getString("password");
-        BigDecimal balance = resultSet.getBigDecimal("balance");
-        Player player = new Player(playerId, name, password);
-        player.setBalance(balance);
-        return player;
+        if (resultSet.next()) {
+            String name = resultSet.getString("name");
+            String password = resultSet.getString("password");
+            BigDecimal balance = resultSet.getBigDecimal("balance");
+            Player player = new Player(playerId, name, password);
+            player.setBalance(balance);
+            return player;
+        } else
+            return null;
     }
 
 
@@ -102,7 +108,9 @@ public class PlayerRepositoryImpl implements PlayerRepository {
     public int getCountPlayers() throws SQLException {
         String sqlGetCount = "SELECT COUNT(*) FROM model.player";
         preparedStatement = connection.prepareStatement(sqlGetCount);
-        return preparedStatement.executeQuery().getInt(1);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        resultSet.next();
+        return resultSet.getInt(1);
     }
 
     @Override
@@ -121,10 +129,10 @@ public class PlayerRepositoryImpl implements PlayerRepository {
     @Override
     public void updateBalance(Long id, BigDecimal newBalance) throws SQLException {
         String sqlUpdateBalance = "UPDATE model.player SET balance=? WHERE id=?";
+        connection.setAutoCommit(true);
         preparedStatement = connection.prepareStatement(sqlUpdateBalance);
         preparedStatement.setBigDecimal(1, newBalance);
         preparedStatement.setLong(2, id);
         preparedStatement.executeUpdate();
-        connection.commit();
     }
 }
