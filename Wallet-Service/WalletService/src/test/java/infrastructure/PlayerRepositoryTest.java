@@ -27,11 +27,10 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @Testcontainers
-
 public class PlayerRepositoryTest {
-    private final static String DB_NAME = "testdb";
-    private final static String USERNAME = "testuser";
-    private final static String PASSWORD = "testpass";
+    private final static String DB_NAME = "testDB";
+    private final static String USERNAME = "testUser";
+    private final static String PASSWORD = "testPass";
     @Mock
     private PlayerRepository playerRepository;
 
@@ -56,7 +55,10 @@ public class PlayerRepositoryTest {
             connection.setAutoCommit(true);
             playerRepository = new PlayerRepositoryImpl(connection);
             String createSchema = "CREATE SCHEMA IF NOT EXISTS model";
-            String createTableSQL = "CREATE TABLE IF NOT EXISTS model.player " + "(id SERIAL PRIMARY KEY," + " name VARCHAR(255)," + " password VARCHAR(255)," + " balance DECIMAL);";
+            String createTableSQL = "CREATE TABLE IF NOT EXISTS model.player " +
+                    "(id SERIAL PRIMARY KEY," +
+                    " name VARCHAR(255)," +
+                    " password VARCHAR(255)," + " balance DECIMAL);";
             try (PreparedStatement createSchemaStatement = connection.prepareStatement(createSchema); PreparedStatement createTableStatement = connection.prepareStatement(createTableSQL)) {
                 createSchemaStatement.execute();
                 createTableStatement.execute();
@@ -166,7 +168,6 @@ public class PlayerRepositoryTest {
         BigDecimal expected = new BigDecimal(100);
         assertEquals(expected, playerRepository.getCurrentBalance(1L));
     }
-
 
     private static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(postgresContainer.getJdbcUrl(), USERNAME, PASSWORD);

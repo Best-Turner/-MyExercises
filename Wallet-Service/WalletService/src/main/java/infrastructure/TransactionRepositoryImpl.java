@@ -3,7 +3,6 @@ package infrastructure;
 import domain.model.Transaction;
 import domain.model.TransactionType;
 import exception.DuplicateTransactionIdException;
-import util.DBConnector;
 
 import java.math.BigDecimal;
 import java.sql.*;
@@ -16,14 +15,18 @@ import java.util.List;
  */
 public class TransactionRepositoryImpl implements TransactionRepository {
     private PreparedStatement preparedStatement;
-    private final Connection connection = DBConnector.getConnection();
+    private final Connection connection;
+
+    public TransactionRepositoryImpl(Connection connection) {
+        this.connection = connection;
+    }
 
 
     @Override
-    public void saveTransaction(Transaction transaction) throws DuplicateTransactionIdException, SQLException {
+    public void saveTransaction(Transaction transaction) throws SQLException {
 
         String sqlSaveTransaction =
-                "INSERT INTO model.transaction (transactionCode, playerId, amount, transactionType) VALUES (?,?,?,?)";
+                "INSERT INTO model.transaction (transactionCode, player_id, amount, transactionType) VALUES (?,?,?,?)";
         preparedStatement = connection.prepareStatement(sqlSaveTransaction);
         preparedStatement.setString(1, transaction.getTransactionCode());
         preparedStatement.setLong(2, transaction.getPlayerId());
@@ -42,7 +45,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
             long playerId = resultSet.getLong("player_id");
             BigDecimal amount = new BigDecimal(resultSet.getString("amount"));
             TransactionType type =
-                    resultSet.getString("type").equals("CREDIT") ? TransactionType.CREDIT : TransactionType.DEBIT;
+                    resultSet.getString("transactionType").equals("CREDIT") ? TransactionType.CREDIT : TransactionType.DEBIT;
             return new Transaction(transactionCode, playerId, amount, type);
         }
         return null;
@@ -50,14 +53,14 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 
     @Override
     public List<Transaction> getTransactionsByPlayerId(long playerId) throws SQLException {
-        preparedStatement = connection.prepareStatement("SELECT * FROM model.transaction WHERE playerId=?");
+        preparedStatement = connection.prepareStatement("SELECT * FROM model.transaction WHERE player_id=?");
         preparedStatement.setLong(1, playerId);
         ResultSet resultSet = preparedStatement.executeQuery();
         List<Transaction> transactionList = new ArrayList<>();
         while (resultSet.next()) {
             String transactionCode = resultSet.getString("transactionCode");
             BigDecimal amount = resultSet.getBigDecimal("amount");
-            TransactionType type = (TransactionType) resultSet.getObject("transactioncode");
+            TransactionType type = TransactionType.valueOf(resultSet.getString("transactionType"));
             transactionList.add(new Transaction(transactionCode, playerId, amount, type));
         }
         return transactionList;
@@ -69,6 +72,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         String sql = "SELECT COUNT(*) FROM model.transaction";
         preparedStatement = connection.prepareStatement(sql);
         ResultSet resultSet = preparedStatement.executeQuery();
+        resultSet.next();
         return resultSet.getInt(1);
     }
 }

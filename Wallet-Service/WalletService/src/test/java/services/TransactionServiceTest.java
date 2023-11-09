@@ -35,9 +35,9 @@ public class TransactionServiceTest {
     public void setUp() {
         Connection connection = DBConnector.getConnection();
         playerService = new PlayerServiceImpl(
-                new PlayerRepositoryImpl(connection), new TransactionRepositoryImpl());
+                new PlayerRepositoryImpl(connection), new TransactionRepositoryImpl(connection));
 
-        repository = new TransactionRepositoryImpl();
+        repository = new TransactionRepositoryImpl(connection);
         service = new TransactionServiceImpl(playerService, repository);
         playerService.performPlayerRegistration(NAME, PASSWORD);
     }

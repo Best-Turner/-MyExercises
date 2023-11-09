@@ -53,7 +53,7 @@ public class Main {
             // Creating a service for working with players
             PlayerRepository playerRepository = new PlayerRepositoryImpl(connection);
             // Creating a transaction repository
-            TransactionRepository transactionRepository = new TransactionRepositoryImpl();
+            TransactionRepository transactionRepository = new TransactionRepositoryImpl(connection);
 
             PlayerService playerService = new PlayerServiceImpl(playerRepository, transactionRepository);
             // Creating a service for performing transactions using the player service and repository

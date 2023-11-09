@@ -22,7 +22,7 @@ public interface TransactionRepository {
      * @param transaction The transaction to be saved.
      * @throws DuplicateTransactionIdException If a transaction with the same identifier already exists.
      */
-    void saveTransaction(Transaction transaction) throws DuplicateTransactionIdException, SQLException;
+    void saveTransaction(Transaction transaction) throws SQLException;
 
     /**
      * Retrieves a transaction by its identifier.
