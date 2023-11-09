@@ -16,10 +16,10 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 @Testcontainers
-
 public class TransactionRepositoryTest {
     private final static String DB_NAME = "testDB";
     private final static String USERNAME = "testUser";
@@ -108,11 +108,4 @@ public class TransactionRepositoryTest {
         assertNull(transactionRepository.getTransactionByTransactionCode("2"));
     }
 
-
-//    @Test
-//    public void whenTransactionByIdNotExistReturnFalse() throws DuplicateTransactionIdException, SQLException {
-//        assertEquals(0, repository.getCountTransaction());
-//        repository.saveTransaction(transaction);
-//        assertFalse(repository.existById(2L));
-//    }
 }

@@ -1,50 +1,82 @@
 package services;
 
 import domain.model.Player;
+import domain.model.Transaction;
+import domain.model.TransactionType;
+import infrastructure.PlayerRepository;
 import infrastructure.PlayerRepositoryImpl;
+import infrastructure.TransactionRepository;
 import infrastructure.TransactionRepositoryImpl;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Answers;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.mockito.stubbing.OngoingStubbing;
 import service.PlayerService;
 import service.PlayerServiceImpl;
 
+import javax.print.attribute.standard.MediaSize;
 import java.math.BigDecimal;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
-//public class PlayerServiceTest {
-//    private final PlayerService service =
+public class PlayerServiceTest {
+
+    @Mock
+    PlayerRepository playerRepository;
+    @Mock
+    TransactionRepository transactionRepository;
+
+    @InjectMocks
+    private PlayerServiceImpl service;
+
+    //    private final PlayerService service =
 //            new PlayerServiceImpl(new PlayerRepositoryImpl(connection), new TransactionRepositoryImpl());
-//    private Player player;
-//    private final static String NAME = "name";
-//    private final String PASSWORD = "password";
-//    private final Long PLAYER_ID = 1L;
-//
-//    @Before
-//    public void setUp() {
-//        //player = new Player( NAME, PASSWORD);
-//    }
-//
-//    @Test
-//    public void whenRegistrationUserIsSuccessfulReturnTrue() {
-//        boolean isSuccessful = service.performPlayerRegistration(NAME, PASSWORD);
-//        assertTrue(isSuccessful);
-//    }
-//
-//    @Test
-//    public void whenRegisterUserThatAlreadyExistsReturnFalse() {
-//        registrationUser();
-//        boolean reRegistration = registrationUser();
-//        assertFalse(reRegistration);
-//    }
-//
-//    @Test
-//    public void whenAuthenticateSuccessfulReturnPlayerId() {
-//        registrationUser();
-//        Long playerId = service.performPlayerAuthentication(NAME, PASSWORD);
-//        assertEquals(this.PLAYER_ID, playerId);
-//    }
-//
+    private Player player;
+    private final static String NAME = "name";
+    private final String PASSWORD = "password";
+    private final Long PLAYER_ID = 1L;
+
+    @Before
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+        //player = new Player( NAME, PASSWORD);
+    }
+
+    @Test
+    public void whenRegistrationUserIsSuccessfulReturnTrue() throws SQLException {
+        when(playerRepository.exist(NAME, PASSWORD)).thenReturn(false);
+        boolean isSuccessful = service.performPlayerRegistration(NAME, PASSWORD);
+        verify(playerRepository, times(1)).savePlayer(NAME, PASSWORD);
+        verify(playerRepository, times(1)).exist(NAME, PASSWORD);
+        assertTrue(isSuccessful);
+    }
+
+    @Test
+    public void whenRegisterUserThatAlreadyExistsReturnFalse() throws SQLException {
+        when(playerRepository.exist(NAME, PASSWORD)).thenReturn(true);
+        boolean isSuccessful = service.performPlayerRegistration(NAME, PASSWORD);
+        verify(playerRepository, never()).savePlayer(NAME, PASSWORD);
+        verify(playerRepository, times(1)).exist(NAME, PASSWORD);
+        assertFalse(isSuccessful);
+    }
+
+    @Test
+    public void whenAuthenticateSuccessfulReturnPlayerId() throws SQLException {
+        when(playerRepository.exist(NAME, PASSWORD)).thenReturn(true);
+        when(playerRepository.getPlayerIdByNameAndPassword(NAME, PASSWORD)).thenReturn(PLAYER_ID);
+        Long playerIdActual = service.performPlayerAuthentication(NAME, PASSWORD);
+        verify(playerRepository, times(1)).exist(NAME, PASSWORD);
+        verify(playerRepository, times(1)).getPlayerIdByNameAndPassword(NAME, PASSWORD);
+        assertEquals(PLAYER_ID, playerIdActual);
+    }
+
 //    @Test
 //    public void whenAnUnregisteredUserLogsInReturnNull() {
 //        Long notRegisteredUser = service.performPlayerAuthentication(NAME, PASSWORD);
@@ -104,8 +136,8 @@ import static org.junit.Assert.*;
 //    }
 
 
-//    private boolean registrationUser() {
-//        return service.performPlayerRegistration(NAME, PASSWORD);
-//    }
-//}
+    private boolean registrationUser() {
+        return service.performPlayerRegistration(NAME, PASSWORD);
+    }
+}
 
