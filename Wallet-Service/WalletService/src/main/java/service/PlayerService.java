@@ -62,5 +62,5 @@ public interface PlayerService {
      */
     boolean updateBalance(Transaction transaction);
 
-    long getPlayerId(String name, String password);
+    Long getPlayerId(String name, String password);
 }

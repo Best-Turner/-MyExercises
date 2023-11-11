@@ -33,7 +33,6 @@ public class PlayerServiceImpl implements PlayerService {
 
     @Override
     public boolean performPlayerRegistration(String playerName, String playerPassword) {
-        //String userId = generateUserID(playerName, playerPassword);
         try {
             if (!playerRepository.exist(playerName, playerPassword)) {
                 playerRepository.savePlayer(playerName, playerPassword);
@@ -87,16 +86,14 @@ public class PlayerServiceImpl implements PlayerService {
 
     @Override
     public boolean updateBalance(Transaction transaction) {
-        String typeOperation =
-                transaction.getType().name().equalsIgnoreCase("CREDIT") ? "CREDIT" : "DEBIT";
-        Player player;
+        String typeOperation = transaction.getType().name();
         boolean operationCompleted = false;
         try {
-            player = playerRepository.getPlayer(transaction.getPlayerId());
+            long playerId = transaction.getPlayerId();
 
             operationCompleted = switch (typeOperation) {
-                case "CREDIT" -> addAmount(player, transaction);
-                case "DEBIT" -> deductAmount(player, transaction);
+                case "CREDIT" -> addAmount(playerId, transaction);
+                case "DEBIT" -> deductAmount(playerId, transaction);
                 default -> operationCompleted;
             };
 
@@ -108,70 +105,42 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
 
-    private boolean addAmount(Player player, Transaction transaction) {
+    private boolean addAmount(long playerId, Transaction transaction) throws SQLException {
         BigDecimal incomingAmount = transaction.getAmount();
         int comparisonResult = incomingAmount.compareTo(BigDecimal.ZERO);
 
         if (comparisonResult > 0) {
-            BigDecimal currentBalance = player.getBalance();
+            BigDecimal currentBalance = playerRepository.getCurrentBalance(playerId);
             BigDecimal newBalance = currentBalance.add(incomingAmount);
-            try {
-                //transactionService.makeTransaction(player.getId(), )
-                playerRepository.updateBalance(player.getId(), newBalance);
-                return true;
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-            //player.addTransaction(transaction);
+
+            playerRepository.updateBalance(playerId, newBalance);
+            return true;
         }
         return false;
     }
 
-    private boolean deductAmount(Player player, Transaction transaction) {
-        BigDecimal currentBalance = player.getBalance();
+    private boolean deductAmount(long playerId, Transaction transaction) throws SQLException {
         BigDecimal incomingAmount = transaction.getAmount();
-        int comparisonResult = currentBalance.compareTo(incomingAmount);
-
+        int comparisonResult = incomingAmount.compareTo(BigDecimal.ZERO);
         if (comparisonResult >= 0) {
-            BigDecimal newBalance = currentBalance.subtract(incomingAmount);
-            try {
-                playerRepository.updateBalance(player.getId(), newBalance);
+            BigDecimal currentBalance = playerRepository.getCurrentBalance(playerId);
+            if (currentBalance.compareTo(incomingAmount) >= 0) {
+                BigDecimal newBalance = currentBalance.subtract(incomingAmount);
+                playerRepository.updateBalance(playerId, newBalance);
                 return true;
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
+            } else {
+                return false;
             }
-            //player.addTransaction(transaction);
         }
         return false;
     }
 
     @Override
-    public long getPlayerId(String name, String password) {
+    public Long getPlayerId(String name, String password) {
         try {
             return playerRepository.getPlayerIdByNameAndPassword(name, password);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
-
-//    private String generateUserID(String username, String password) {
-//        try {
-//            String data = username + password;
-//            MessageDigest md = MessageDigest.getInstance("SHA-256");
-//            byte[] hashBytes = md.digest(data.getBytes(StandardCharsets.UTF_8));
-//
-//            StringBuilder hexString = new StringBuilder();
-//            for (byte b : hashBytes) {
-//                String hex = Integer.toHexString(0xFF & b);
-//                if (hex.length() == 1) {
-//                    hexString.append('0');
-//                }
-//                hexString.append(hex);
-//            }
-//            return hexString.substring(0, 10);
-//        } catch (NoSuchAlgorithmException e) {
-//            e.printStackTrace();
-//            return null;
-//        }
-//    }
 }

@@ -19,9 +19,11 @@ import service.PlayerServiceImpl;
 
 import javax.print.attribute.standard.MediaSize;
 import java.math.BigDecimal;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -30,23 +32,16 @@ public class PlayerServiceTest {
 
     @Mock
     PlayerRepository playerRepository;
-    @Mock
-    TransactionRepository transactionRepository;
-
     @InjectMocks
     private PlayerServiceImpl service;
-
-    //    private final PlayerService service =
-//            new PlayerServiceImpl(new PlayerRepositoryImpl(connection), new TransactionRepositoryImpl());
-    private Player player;
     private final static String NAME = "name";
     private final String PASSWORD = "password";
     private final Long PLAYER_ID = 1L;
+    private final Player player = new Player(PLAYER_ID, NAME, PASSWORD);
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        //player = new Player( NAME, PASSWORD);
     }
 
     @Test
@@ -77,67 +72,117 @@ public class PlayerServiceTest {
         assertEquals(PLAYER_ID, playerIdActual);
     }
 
-//    @Test
-//    public void whenAnUnregisteredUserLogsInReturnNull() {
-//        Long notRegisteredUser = service.performPlayerAuthentication(NAME, PASSWORD);
-//        assertNull(notRegisteredUser);
-//    }
-//
-//    @Test
-//    public void getBalance() {
-//        registrationUser();
-//        BigDecimal balance = service.getBalance(PLAYER_ID);
-//        assertEquals(BigDecimal.ZERO, balance);
-//    }
-//
-//    @Test
-//    public void getPlayer() {
-//        registrationUser();
-//        Player fromDB = service.getPlayer(PLAYER_ID);
-//        assertNotNull(fromDB);
-//        assertEquals(player, fromDB);
-//    }
-//
-//    @Test
-//    public void whenGetUserNonExistReturnNull() {
-//        Player playerNull = service.getPlayer(PLAYER_ID);
-//        assertNull(playerNull);
-//    }
+        @Test
+    public void whenAnUnregisteredUserLogsInReturnNull() throws SQLException {
+        when(playerRepository.exist(NAME, PASSWORD)).thenReturn(false);
+        Long notRegisteredUser = service.performPlayerAuthentication(NAME, PASSWORD);
+        assertNull(notRegisteredUser);
+    }
 
-//    @Test
-//    public void getPlayerTransactionHistory() {
-//        registrationUser();
-//
-//        Player fromDB = service.getPlayer(PLAYER_ID);
-//        List<Transaction> expected = new ArrayList<>();
-//        for (int i = 0; i < 10; i++) {
-//            Transaction transaction =
-//                    new Transaction(PLAYER_ID, new BigDecimal(100), TransactionType.CREDIT);
-//            expected.add(transaction);
-//            fromDB.addTransaction(transaction);
-//        }
-//
-//        assertEquals(expected, service.getPlayerTransactionHistory(fromDB.getId()));
-//
-//
-//    }
+    @Test
+    public void getBalance() throws SQLException {
+        when(playerRepository.getCurrentBalance(PLAYER_ID)).thenReturn(new BigDecimal(100));
+        BigDecimal actualBalance = service.getBalance(PLAYER_ID);
+        verify(playerRepository, times(1)).getCurrentBalance(PLAYER_ID);
+        assertEquals(new BigDecimal(100), actualBalance);
+    }
 
-//    @Test
-//    public void updateBalance() {
-//        registrationUser();
-//        BigDecimal currentBalance = service.getBalance(PLAYER_ID);
-//        assertEquals(BigDecimal.ZERO, currentBalance);
-//        service.updateBalance(
-//                new Transaction( PLAYER_ID, new BigDecimal(200), TransactionType.CREDIT), "CREDIT");
-//        assertEquals(200, 200, 0.0);
-//        service.updateBalance(
-//                new Transaction( PLAYER_ID, new BigDecimal(50), TransactionType.DEBIT), "DEBIT");
-//        assertEquals(150, 150);
-//    }
+    @Test
+    public void getPlayer() throws SQLException {
+        when(playerRepository.getPlayer(PLAYER_ID)).thenReturn(player);
+        Player fromDB = service.getPlayer(PLAYER_ID);
+        verify(playerRepository, times(1)).getPlayer(PLAYER_ID);
+        assertNotNull(fromDB);
+        assertEquals(player, fromDB);
+    }
+
+    @Test
+    public void whenGetUserNonExistReturnNull() throws SQLException {
+        when(playerRepository.getPlayer(PLAYER_ID)).thenReturn(null);
+        Player playerNull = service.getPlayer(PLAYER_ID);
+        assertNull(playerNull);
+    }
+
+    @Test
+    public void getPlayerTransactionHistory() throws SQLException {
+        when(playerRepository.getPlayer(PLAYER_ID)).thenReturn(player);
+        Player playerFromDB = service.getPlayer(PLAYER_ID);
+        verify(playerRepository,times(1)).getPlayer(PLAYER_ID);
+        List<Transaction> expected = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            Transaction transaction =
+                    new Transaction("someTransactionCode", PLAYER_ID, new BigDecimal(100), TransactionType.CREDIT);
+            expected.add(transaction);
+            playerFromDB.addTransaction(transaction);
+        }
+        when(playerRepository.getPlayerTransactions(PLAYER_ID)).thenReturn(expected);
+
+        assertEquals(expected, service.getPlayerTransactionHistory(PLAYER_ID));
 
 
-    private boolean registrationUser() {
-        return service.performPlayerRegistration(NAME, PASSWORD);
+    }
+
+    @Test
+    public void whenAddToCurrentBalanceThenBalanceShouldBeIncreaseByThisValue() throws SQLException {
+        when(playerRepository.getCurrentBalance(PLAYER_ID)).thenReturn(BigDecimal.ZERO);
+        BigDecimal currentBalanceBeforeChange = service.getBalance(PLAYER_ID);
+        verify(playerRepository, times(1)).getCurrentBalance(PLAYER_ID);
+        assertEquals(BigDecimal.ZERO, currentBalanceBeforeChange);
+        boolean updateBalanceResult = service.updateBalance(
+                new Transaction("transactionCodeCredit", PLAYER_ID, new BigDecimal(200), TransactionType.CREDIT));
+        verify(playerRepository, times(2)).getCurrentBalance(PLAYER_ID);
+        assertTrue(updateBalanceResult);
+        when(playerRepository.getCurrentBalance(PLAYER_ID)).thenReturn(new BigDecimal(200));
+        assertEquals(new BigDecimal(200), service.getBalance(PLAYER_ID));
+        verify(playerRepository, times(3)).getCurrentBalance(PLAYER_ID);
+    }
+
+    @Test
+    public void whenIncomingAmountLessThenOrEqualsZeroThenReturnFalse() throws SQLException {
+        boolean updateBalanceResult = service.updateBalance(
+                new Transaction("transactionCodeCredit", PLAYER_ID, BigDecimal.ZERO, TransactionType.CREDIT));
+        assertFalse(updateBalanceResult);
+    }
+
+    @Test
+    public void whenDecreaseBalanceByValueThenBalanceShouldDecreaseByThisValue() throws SQLException {
+        when(playerRepository.getCurrentBalance(PLAYER_ID)).thenReturn(new BigDecimal(100));
+        BigDecimal currentBalance = service.getBalance(PLAYER_ID);
+        verify(playerRepository, times(1)).getCurrentBalance(PLAYER_ID);
+        assertEquals(new BigDecimal(100), currentBalance);
+        boolean transactionCodeDebit = service.updateBalance(
+                new Transaction("transactionCodeDebit", PLAYER_ID, new BigDecimal(50), TransactionType.DEBIT));
+        verify(playerRepository, times(2)).getCurrentBalance(PLAYER_ID);
+        assertTrue(transactionCodeDebit);
+    }
+
+    @Test
+    public void whenValueIsGreaterThatCurrentBalanceThenReturnFalse() throws SQLException {
+        when(playerRepository.getCurrentBalance(PLAYER_ID)).thenReturn(new BigDecimal(100));
+        assertEquals(new BigDecimal(100), service.getBalance(PLAYER_ID));
+        boolean updateBalanceResult = service.updateBalance(
+                new Transaction("transactionCodeCredit", PLAYER_ID, new BigDecimal(101), TransactionType.DEBIT));
+        assertFalse(updateBalanceResult);
+    }
+
+    @Test
+    public void whenWithdrawnLessThanOrEqualToZeroThenReturnFalse() throws SQLException {
+        boolean updateBalanceResult = service.updateBalance(
+                new Transaction("transactionCodeCredit", PLAYER_ID, new BigDecimal(-1), TransactionType.DEBIT));
+        assertFalse(updateBalanceResult);
+    }
+
+    @Test
+    public void whenEnterPlayerNameAndPasswordWhichInDatabaseReturnPlayerId() throws SQLException {
+        when(playerRepository.getPlayerIdByNameAndPassword(NAME, PASSWORD)).thenReturn(PLAYER_ID);
+        Long playerId = service.getPlayerId(NAME, PASSWORD);
+        assertEquals(PLAYER_ID, playerId);
+    }
+
+    @Test
+    public void whenEnterPlayerNameAndPasswordWhichAreNotInDatabaseReturnNull() throws SQLException {
+        when(playerRepository.getPlayerIdByNameAndPassword(NAME, PASSWORD)).thenReturn(null);
+        assertNull(service.getPlayerId(NAME, PASSWORD));
     }
 }
 

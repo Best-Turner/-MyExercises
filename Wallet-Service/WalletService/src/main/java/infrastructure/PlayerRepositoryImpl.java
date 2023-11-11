@@ -22,10 +22,8 @@ import java.util.List;
  * @see Transaction
  */
 public class PlayerRepositoryImpl implements PlayerRepository {
-    //private final Map<String, Player> playersDB = new HashMap<>();
     private PreparedStatement preparedStatement;
     private final Connection connection;
-
 
     public PlayerRepositoryImpl(Connection connection) {
         this.connection = connection;
@@ -84,14 +82,13 @@ public class PlayerRepositoryImpl implements PlayerRepository {
     @Override
     public List<Transaction> getPlayerTransactions(Long playerId) throws SQLException {
         List<Transaction> transactionList = new ArrayList<>();
-        String sqlGetListTransactionByPlayerId = "SELECT * FROM model.transaction WHERE id=?";
+        String sqlGetListTransactionByPlayerId = "SELECT * FROM model.transaction WHERE player_id=?";
         preparedStatement = connection.prepareStatement(sqlGetListTransactionByPlayerId);
         preparedStatement.setLong(1, playerId);
         ResultSet resultSet = preparedStatement.executeQuery();
         while (resultSet.next()) {
-            long id = resultSet.getLong("id");
             String amount = resultSet.getString("amount");
-            String type = resultSet.getString("type");
+            String type = resultSet.getString("transaction_type");
             String code = resultSet.getString("transaction_code");
 
             transactionList.add(new Transaction(

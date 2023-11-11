@@ -24,9 +24,8 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 
     @Override
     public void saveTransaction(Transaction transaction) throws SQLException {
-
         String sqlSaveTransaction =
-                "INSERT INTO model.transaction (transactionCode, player_id, amount, transactionType) VALUES (?,?,?,?)";
+                "INSERT INTO model.transaction (transaction_code, player_id, amount, transaction_type) VALUES (?,?,?,?)";
         preparedStatement = connection.prepareStatement(sqlSaveTransaction);
         preparedStatement.setString(1, transaction.getTransactionCode());
         preparedStatement.setLong(2, transaction.getPlayerId());
@@ -37,7 +36,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 
     @Override
     public Transaction getTransactionByTransactionCode(String transactionCode) throws SQLException {
-        String sqlTransactionById = "SELECT * FROM model.transaction WHERE transactionCode=?";
+        String sqlTransactionById = "SELECT * FROM model.transaction WHERE transaction_code=?";
         preparedStatement = connection.prepareStatement(sqlTransactionById);
         preparedStatement.setString(1, transactionCode);
         ResultSet resultSet = preparedStatement.executeQuery();
@@ -45,26 +44,26 @@ public class TransactionRepositoryImpl implements TransactionRepository {
             long playerId = resultSet.getLong("player_id");
             BigDecimal amount = new BigDecimal(resultSet.getString("amount"));
             TransactionType type =
-                    resultSet.getString("transactionType").equals("CREDIT") ? TransactionType.CREDIT : TransactionType.DEBIT;
+                    resultSet.getString("transaction_type").equals("CREDIT") ? TransactionType.CREDIT : TransactionType.DEBIT;
             return new Transaction(transactionCode, playerId, amount, type);
         }
         return null;
     }
 
-    @Override
-    public List<Transaction> getTransactionsByPlayerId(long playerId) throws SQLException {
-        preparedStatement = connection.prepareStatement("SELECT * FROM model.transaction WHERE player_id=?");
-        preparedStatement.setLong(1, playerId);
-        ResultSet resultSet = preparedStatement.executeQuery();
-        List<Transaction> transactionList = new ArrayList<>();
-        while (resultSet.next()) {
-            String transactionCode = resultSet.getString("transactionCode");
-            BigDecimal amount = resultSet.getBigDecimal("amount");
-            TransactionType type = TransactionType.valueOf(resultSet.getString("transactionType"));
-            transactionList.add(new Transaction(transactionCode, playerId, amount, type));
-        }
-        return transactionList;
-    }
+//    @Override
+//    public List<Transaction> getTransactionsByPlayerId(long playerId) throws SQLException {
+//        preparedStatement = connection.prepareStatement("SELECT * FROM model.transaction WHERE player_id=?");
+//        preparedStatement.setLong(1, playerId);
+//        ResultSet resultSet = preparedStatement.executeQuery();
+//        List<Transaction> transactionList = new ArrayList<>();
+//        while (resultSet.next()) {
+//            String transactionCode = resultSet.getString("transaction_code");
+//            BigDecimal amount = resultSet.getBigDecimal("amount");
+//            TransactionType type = TransactionType.valueOf(resultSet.getString("transaction_type"));
+//            transactionList.add(new Transaction(transactionCode, playerId, amount, type));
+//        }
+//        return transactionList;
+//    }
 
 
     @Override

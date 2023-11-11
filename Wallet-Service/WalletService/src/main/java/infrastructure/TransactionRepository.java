@@ -20,7 +20,6 @@ public interface TransactionRepository {
      * Saves a transaction.
      *
      * @param transaction The transaction to be saved.
-     * @throws DuplicateTransactionIdException If a transaction with the same identifier already exists.
      */
     void saveTransaction(Transaction transaction) throws SQLException;
 
@@ -31,8 +30,6 @@ public interface TransactionRepository {
      * @return The transaction with the specified identifier, or null if not found.
      */
     Transaction getTransactionByTransactionCode(String transactionCode) throws SQLException;
-
-    List<Transaction> getTransactionsByPlayerId(long playerId) throws SQLException;
 
     /**
      * Returns the count of saved transactions in the repository.

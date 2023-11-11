@@ -26,7 +26,7 @@
             <column name="amount" type="numeric(10,2)">
                 <constraints nullable="false"/>
             </column>
-            <column name="transactionType" type="type">
+            <column name="transaction_type" type="type">
                 <constraints nullable="false"/>
             </column>
         </createTable>

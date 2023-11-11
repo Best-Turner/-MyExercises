@@ -71,7 +71,7 @@ public class ConsoleInputHandler {
                         break;
                     case 0:
                         commandAnswer = 0;
-                        break;
+                        return;
                     default:
                         AuditLogger.log("The user entered an incorrect command");
                         System.out.println(COMMAND_WRONG_ANSWER);
@@ -135,7 +135,6 @@ public class ConsoleInputHandler {
         List<Transaction> transactionHistory = playerService.getPlayerTransactionHistory(playerId);
         if (transactionHistory.isEmpty()) {
             System.out.println("Transaction list is empty");
-
         } else {
             for (Transaction transaction : transactionHistory) {
                 builder.append("Transaction code : ").append(transaction.getTransactionCode())

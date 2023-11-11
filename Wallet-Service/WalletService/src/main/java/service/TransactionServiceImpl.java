@@ -38,18 +38,14 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public boolean makeTransaction(Long playerId, BigDecimal amount, TransactionType incomingTransactionType) throws DuplicateTransactionIdException {
-        String transactionCode = UUID.randomUUID().toString();
-        System.out.println("transactionCode created!");
-        Transaction transaction = new Transaction(transactionCode, playerId, amount, incomingTransactionType);
-        System.out.println("transaction created!");
-
         try {
-
+            String transactionCode = UUID.randomUUID().toString();
             Transaction transactionExist = transactionRepository.getTransactionByTransactionCode(transactionCode);
 
             if (transactionExist != null) {
                 throw new DuplicateTransactionIdException("ERROR: DUPLICATE TRANSACTION ID. OPERATION TERMINATED!");
             }
+            Transaction transaction = new Transaction(transactionCode, playerId, amount, incomingTransactionType);
             boolean updateBalanceSuccessful = playerService.updateBalance(transaction);
             if (updateBalanceSuccessful) {
                 transactionRepository.saveTransaction(transaction);
@@ -58,11 +54,8 @@ public class TransactionServiceImpl implements TransactionService {
                 return false;
             }
 
-
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
     }
-
 }

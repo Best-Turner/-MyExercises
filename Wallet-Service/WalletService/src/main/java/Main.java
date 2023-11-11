@@ -33,10 +33,6 @@ public class Main {
     public static void main(String[] args) {
 
         try {
-//            Connection connection = DriverManager.getConnection(
-//                    "jdbc:postgresql://localhost:5432/jdbc",
-//                    "postgres",
-//                    "password");
             Connection connection = DBConnector.getConnection();
             Database database =
                     DatabaseFactory.getInstance()

@@ -9,7 +9,7 @@
             <column name="player_id" value="1"/>
             <column name="transaction_code" value="AAAAAbbbbCCCC"/>
             <column name="amount" valueNumeric="50"/>
-            <column name="type" value="CREDIT"/>
+            <column name="transaction_type" value="CREDIT"/>
 
         </insert>
     </changeSet>

@@ -43,7 +43,7 @@ public class TransactionRepositoryTest {
         String createSchemaSql = "CREATE SCHEMA IF NOT EXISTS model";
         String createTypeSql = "CREATE TYPE typeTr AS ENUM('CREDIT', 'DEBIT');";
         String createTableTransactionSql = "CREATE TABLE IF NOT EXISTS model.transaction " +
-                "(id SERIAL PRIMARY KEY, player_id bigint, transactionCode varchar(255), amount DECIMAL, transactionType typeTr);";
+                "(id SERIAL PRIMARY KEY, player_id bigint, transaction_code varchar(255), amount DECIMAL, transaction_type typeTr);";
         try (PreparedStatement createSchemaStatement = connection.prepareStatement(createSchemaSql);
              PreparedStatement createTypeStatement = connection.prepareStatement(createTypeSql);
              PreparedStatement createTableStatement = connection.prepareStatement(createTableTransactionSql)) {
@@ -70,26 +70,10 @@ public class TransactionRepositoryTest {
     }
 
     @Test
-    public void saveTransaction() throws DuplicateTransactionIdException, SQLException {
+    public void saveTransaction() throws SQLException {
         assertEquals(0, transactionRepository.getCountTransaction());
         transactionRepository.saveTransaction(transaction);
         assertEquals(1, transactionRepository.getCountTransaction());
-    }
-
-
-    @Test
-    public void getTransactionsListByPlayerId() throws SQLException {
-        assertEquals(0, transactionRepository.getCountTransaction());
-        List<Transaction> transactionList = new ArrayList<>();
-
-        for (int i = 0; i < 5; i++) {
-            transaction = new Transaction("test" + i, 1L, BigDecimal.valueOf(10 * i), TransactionType.CREDIT);
-            transactionList.add(transaction);
-            transactionRepository.saveTransaction(transaction);
-        }
-        assertEquals(5, transactionRepository.getCountTransaction());
-
-        assertEquals(transactionList, transactionRepository.getTransactionsByPlayerId(1L));
     }
 
 
