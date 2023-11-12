@@ -39,7 +39,7 @@ public class PlayerRepositoryTest {
 
     @Container
     public static PostgreSQLContainer<?> postgresContainer =
-            new PostgreSQLContainer<>(DockerImageName.parse("postgres:13"))
+            new PostgreSQLContainer<>(DockerImageName.parse("postgres:latest"))
                     .withDatabaseName(DB_NAME)
                     .withUsername(USERNAME)
                     .withPassword(PASSWORD)

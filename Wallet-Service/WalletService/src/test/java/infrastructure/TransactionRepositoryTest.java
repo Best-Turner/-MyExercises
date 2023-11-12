@@ -30,7 +30,7 @@ public class TransactionRepositoryTest {
 
     @Container
     public static final PostgreSQLContainer<?> container =
-            new PostgreSQLContainer<>(DockerImageName.parse("postgres:13"))
+            new PostgreSQLContainer<>(DockerImageName.parse("postgres:latest"))
                     .withDatabaseName(DB_NAME)
                     .withUsername(USERNAME)
                     .withPassword(PASSWORD);

@@ -1,0 +1,15 @@
+# Use postgres/example user/password credentials
+version: '3.1'
+
+services:
+
+  db:
+    image: postgres
+    restart: always
+    container_name: wallet-service-app
+    environment:
+      POSTGRES_DB: WalletService
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: 12345
+    ports:
+      - 3001:5432
